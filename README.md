@@ -2,10 +2,11 @@
 
 [![CI](https://github.com/scaleforcenow-maker/aftervue/actions/workflows/ci.yml/badge.svg)](https://github.com/scaleforcenow-maker/aftervue/actions/workflows/ci.yml)
 
-Code of record for AfterVue (getaftervue.com): the patient-facing preview app and
-widget, the Vercel functions, the lead-management service, the iOS kiosk, and the
-ops/SEO/BD tooling. The working copy still lives on the founder's Mac; see
-`docs/cloud-credit-plan.md` section 2 for the push steps.
+Planning repository for AfterVue (getaftervue.com): session plans, SEO drafts and
+the editorial standard, and the repo-hygiene tooling. The application code (site,
+iOS kiosk, Vercel functions, lead-management service, tooling) lives in
+`AfterVue/aftervue-ai`, branch `domain-getaftervue`; see `docs/cloud-credit-plan.md`
+section 8 for how cloud sessions get access to it.
 
 - `docs/cloud-credit-plan.md`: how to spend the Claude Code cloud-session credit,
   with ready-to-paste session prompts.

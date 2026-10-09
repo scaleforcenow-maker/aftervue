@@ -7,7 +7,19 @@ plan and the paste-ready prompts that brought you here.
 ## What this repository is
 
 AfterVue (getaftervue.com) helps aesthetic practices show patients an
-AI-illustrated preview during a consult. The code of record lives here:
+AI-illustrated preview during a consult.
+
+The real codebase (site, iOS app, functions, tooling) lives in the GitHub
+repository `AfterVue/aftervue-ai`, branch `domain-getaftervue`. Cloud sessions
+cannot reach it until the Claude GitHub App is installed on that repository
+(`docs/cloud-credit-plan.md` section 8 has the one-click unlock). This
+repository, `scaleforcenow-maker/aftervue`, is the planning repo: session plans,
+SEO drafts and the editorial standard, and the hygiene tooling below. Work that
+needs the application code is drafted here and carried over by the founder's
+Mac session until that access exists.
+
+The layout below is the one the code has in `aftervue-ai` and will have here
+once it is mirrored or pushed:
 
 | Path | What it is | Stack |
 | --- | --- | --- |
@@ -21,9 +33,9 @@ AI-illustrated preview during a consult. The code of record lives here:
 | `docs/` | Repo-level docs, runbooks, audits | Markdown |
 | `scripts/` | Repo hygiene: session setup, secret scan, brand check, workflow lint | Bash, Python |
 
-Until the founder pushes from their Mac, only `docs/`, `scripts/`, `.github/`
-and the config files at the root exist. CI is written to light up stack by
-stack as the code arrives.
+Today only `docs/`, `_seo/`, `scripts/`, `.github/` and the config files at
+the root exist here. CI is written to light up stack by stack as the code
+arrives.
 
 ## The public-repo rule
 
@@ -57,7 +69,12 @@ rewrite history on your own: rotate the key, remove the file, add it to
 AfterVue is HIPAA-adjacent and makes no medical claims. These rules apply to
 anything a patient or practice might read: the site, the app, `_seo/drafts/`,
 App Store text, emails, and social copy. `scripts/brand_check.py` enforces the
-mechanical ones in CI; the rest are on you.
+mechanical ones (exclamation marks, dollar amounts near the brand name,
+brand-name drugs in public drafts, phone-number patterns) on markdown under
+`_seo/drafts/` and `ops/` in CI; the rest are on you. The dollar rule also
+fires in `ops/`, so an internal pricing document needs a
+`rule=dollar-near-brand path=...` line in `scripts/brand_check_allow.txt`
+rather than a rewrite.
 
 - **No practice or location counts.** Never say how many practices, clinics,
   cities, or patients use AfterVue.
