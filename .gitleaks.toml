@@ -88,10 +88,16 @@ keywords = ["service_account"]
 
 [[rules]]
 id = "aftervue-cloudflare-api-token"
-description = "Cloudflare API token (Turnstile secret or zone token) next to a Cloudflare identifier."
-regex = '''(?i)(?:cloudflare|turnstile)[a-z0-9_\-]*(?:token|secret|key)[^\n]{0,20}?['"]?\b([a-zA-Z0-9_\-]{40})\b['"]?'''
+description = "Cloudflare API token (40 chars) or Turnstile secret key (35 chars) next to a Cloudflare identifier."
+regex = '''(?i)(?:cloudflare|turnstile)[a-z0-9_\-]*(?:token|secret|key)[^\n]{0,20}?['"]?\b([a-zA-Z0-9_\-]{35,40})\b['"]?'''
 secretGroup = 1
 keywords = ["cloudflare", "turnstile"]
+
+[[rules]]
+id = "aftervue-turnstile-secret-key"
+description = "Turnstile secret key by shape: 0x4 prefix plus 32 characters (site keys are 24 characters and public)."
+regex = '''\b0x4[A-Za-z0-9_\-]{32}\b'''
+keywords = ["0x4"]
 
 # ---------------------------------------------------------------------------
 # Allowlist: sample and fixture files, placeholder values, and this config.
@@ -113,21 +119,27 @@ paths = [
   '''(^|/)tools/stripe/catalog\.sample\.json$''',
   '''(^|/)tests?/fixtures/''',
   '''(^|/)__fixtures__/''',
-  '''(^|/)scripts/tests/''',
+  # The rule self-test prints a PEM header/footer literal; nothing else under scripts/tests is exempt.
+  '''(^|/)scripts/tests/test_secret_scan_rules\.sh$''',
   '''(^|/)package-lock\.json$''',
   '''(^|/)pnpm-lock\.yaml$''',
   '''(^|/)yarn\.lock$''',
   '''(^|/)Package\.resolved$''',
 ]
 
-# Lines whose "secret" is obviously a placeholder.
+# Lines whose "secret" is obviously a placeholder. regexTarget = "line" means a
+# match anywhere on the line silences every finding on that line, so the
+# environment-reference patterns are anchored to the end of the line: a
+# hardcoded fallback after `process.env.X ||` must still be reported.
 regexTarget = "line"
 regexes = [
   '''(?i)(replace[_\-]?me|your[_\-]?(key|token|secret)[_\-]?here|changeme|change[_\-]me|placeholder|example[_\-]?key|dummy|xxxxxxxx|0000-0000-0000)''',
   '''(?i)\$\{?[A-Z0-9_]+\}?\s*$''',
-  '''(?i)process\.env\.[A-Z0-9_]+''',
-  '''(?i)os\.environ(\.get)?\[?\(?['"][A-Z0-9_]+['"]''',
+  '''(?i)process\.env\.[A-Z0-9_]+\s*[;,)}]*\s*$''',
+  '''(?i)os\.environ(\.get)?\[?\(?['"][A-Z0-9_]+['"]\)?\]?\s*[;,)}]*\s*$''',
   '''00000000-0000-0000-0000-000000000000''',
+  # Cloudflare's documented Turnstile dummy secret keys (always pass / always fail / spent).
+  '''\b[123]x0{31}AA\b''',
   '''AIza[Xx]{35}''',
   '''(?i)(sk|rk)_(live|test)_[x\.]{20,}''',
   # Stripe lookup keys and SKUs are public identifiers, not credentials.
