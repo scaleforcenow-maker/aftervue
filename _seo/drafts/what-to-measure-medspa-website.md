@@ -35,7 +35,7 @@ Traffic is the number every medspa owner can quote and the one that matters leas
 3. **Consults held.** Not scheduled, held. This number lives in your booking software, not your analytics tool.
 4. **Treatments scheduled.** Consults that became a treatment appointment.
 
-The ratios between neighbours tell you where to work. Many visitors but few starts means the page or the offer is the problem. Many starts but few completions means the form or booking flow has friction. Many completions but few consults held points at follow-up speed. Many consults held but few treatments scheduled is a consult-room issue, not a website one. Traffic is the denominator under all of this, useful context and a poor goal.
+The ratios between neighbours tell you where to work. Many visitors but few starts means the page or the offer is the problem. Many starts but few completions means the booking flow has friction. Many completions but few consults held points at follow-up speed. Many consults held but few treatments scheduled is a consult-room issue, not a website one. Traffic is the denominator under all of this, useful context and a poor goal.
 
 ## Setting them up in Plausible
 
@@ -47,7 +47,7 @@ Google Analytics 4 publishes a list of recommended event names, and lead generat
 
 ## UTM discipline for Instagram and Google Business Profile
 
-A UTM is a short tag added to a link so your analytics tool knows where the click came from. Without one, Google Business Profile clicks tend to blend into organic or direct traffic, and Instagram bio clicks often show as direct. Two rules make this manageable. First, agree on one lowercase spelling for each source and medium and write it down. Instagram gets `utm_source=instagram&utm_medium=social&utm_campaign=bio`, and your profile gets `utm_source=google&utm_medium=gbp&utm_campaign=profile`. Second, keep tags off internal links on your own site, or you will overwrite the original source mid-visit. After you save the profile link, click it from the live listing on a phone to confirm the tags survive.
+A UTM is a short tag added to a link so your analytics tool knows where the click came from. Without one, Google Business Profile clicks tend to blend into organic or direct traffic, and Instagram bio clicks often show as direct. Two rules keep it manageable. First, agree on one lowercase spelling for each source and medium and write it down. Instagram gets `utm_source=instagram&utm_medium=social&utm_campaign=bio`, and your profile gets `utm_source=google&utm_medium=gbp&utm_campaign=profile`. Second, keep tags off internal links on your own site, or you will overwrite the original source mid-visit. After you save the profile link, click it from the live listing on a phone to confirm the tags survive.
 
 ## Call tracking caveats
 
@@ -55,16 +55,16 @@ Phone calls are real conversions for a medspa and easy to lose in the data. Call
 
 ## Privacy: what never goes into an analytics event
 
-An analytics event should carry a page, an event name, and at most a generic property. Never a name, email, phone number, photo, date of birth, or free-text note. Never a treatment detail that identifies a person. The HHS Office for Civil Rights bulletin on online tracking technologies set out the agency's view of when website data can be protected health information. A federal court vacated the portion covering unauthenticated public pages in June 2024, and the rest remains as guidance. Court rulings do not change what a patient expects, and state privacy laws apply regardless. If you would not want a vendor to see it, do not put it in an event.
+An analytics event should carry a page, an event name, and at most a generic property. Never a name, email, phone number, photo, date of birth, or free-text note. Never a treatment detail that identifies a person. The HHS Office for Civil Rights bulletin on online tracking technologies set out the agency's view of when website data can be protected health information. A federal court vacated the portion covering unauthenticated public pages in June 2024, and the rest remains as guidance. Court rulings do not change what a patient expects, and state privacy laws still apply. If you would not want a vendor to see it, do not put it in an event.
 
 ## Where a preview tool fits in the funnel
 
-An embedded before-and-after preview adds three events between the visit and the booking start: preview started, preview generated, and booking click. These are intent signals that sharpen the first ratio. If visitors generate previews but do not click through to book, the handoff needs work. If they click through but do not complete, the booking page needs work. The events carry only a generic treatment area, never the photo.
+An embedded before-and-after preview adds three events between the visit and the booking start: preview started, preview generated, and booking click. These intent signals sharpen the first ratio. If visitors generate previews but do not click through to book, the handoff needs work. If they click through but do not complete, the booking page needs work. The events carry only a generic treatment area, never the photo.
 
 AfterVue's own event layer works this way. Properties are sanitized before anything leaves the browser, so photos, which AfterVue never stores, and free text never reach analytics. The booking click is recorded as the key event, because AfterVue does not book consults. It hands the visitor to the practice's booking page, and previews are illustrative AI previews, not promises of a result. With the [preview app](/app/) or our [services](/services.html), the events arrive ready to count.
 
 ## The weekly 15-minute review
 
-Pick a day and a time and keep it. Pull the four numbers for last week and for the previous four weeks. Find the ratio that moved the most and ask why. Change one thing, note it with the date, and leave the rest alone until next week. Resist adding metrics. The owners who improve medspa website conversion over a year are the ones who looked at the same four numbers fifty times.
+Pick a day and a time and keep it. Pull the four numbers for last week and the previous four weeks. Find the ratio that moved the most and ask why. Change one thing, note it with the date, and leave the rest alone until next week. Resist adding metrics. The owners who improve medspa website conversion over a year are the ones who looked at the same four numbers fifty times.
 
 Want to see preview events and the booking handoff on a real site? [Book a live demo](/).
