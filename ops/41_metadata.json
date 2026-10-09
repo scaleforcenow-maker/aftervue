@@ -1,0 +1,58 @@
+{
+  "$schema_note": "Field names follow the App Store Connect API: appInfoLocalizations (name, subtitle, privacyPolicyUrl) and appStoreVersionLocalizations (description, keywords, promotionalText, whatsNew, supportUrl, marketingUrl). Validate with tools/appstore/check_metadata.py before any upload.",
+  "app": {
+    "name": "AfterVue AI",
+    "bundleId": "com.aftervue.kiosk",
+    "platform": "IOS",
+    "primaryLocale": "en-US",
+    "versionString": "1.0"
+  },
+  "generated": "2026-10-09",
+  "limits": {
+    "name": 30,
+    "subtitle": 30,
+    "promotionalText": 170,
+    "keywords": 100,
+    "description": 4000,
+    "whatsNew": 4000
+  },
+  "forbiddenTerms": [
+    "botox",
+    "bótox"
+  ],
+  "locales": {
+    "en-US": {
+      "name": "AfterVue AI",
+      "subtitle": "Before & After for Medspas",
+      "promotionalText": "Show patients their own likely result on your iPad — lips, cheeks, jawline, brow, under-eye, skin — then book. No beauty scores. No judgment.",
+      "keywords": "medspa,injector,aesthetic,filler,lips,wrinkles,consult,preview,simulator,before after,skin,clinic",
+      "description": "AfterVue AI turns a consult into a preview. A patient sits with your iPad, takes a front and side photo, and sees a photoreal before/after of their own face for the treatments you offer — with a slider that moves from subtle to enhanced. Built for medspas, injectors and aesthetic practices.\n\nFOR PRACTICES\nAfterVue AI is activated with a practice code from your AfterVue subscription. It is not a consumer app: the practice owns the device, the session and the conversation. Subscribe and manage billing at getaftervue.com.\n\nWHAT PATIENTS SEE\n• Their own photo, front and side profile\n• A before/after slider for every selected treatment\n• Up to three treatments stacked at once\n• Adjustable intensity from Before to Subtle, Typical and Enhanced\n• A \"Simulated preview\" label on every image\n\nTREATMENTS INCLUDED\nForehead and frown lines · crow's feet · jaw slimming · brow lift · lip filler · cheek filler · jawline and chin contouring · under-chin and jowl contouring · nose bump softening (profile) · under-eye rejuvenation · upper eyelid tightening · skin resurfacing and glow · IPL photofacial · RF microneedling. Your practice code enables only the treatments you offer.\n\nBUILT FOR THE TREATMENT ROOM\n• Kiosk mode: attract screen, idle reset, and an optional Face ID / passcode lock on staff settings\n• Provider consent step before any photo is taken\n• Save the preview for the patient\n• Session log export (CSV) for the practice — no patient photos are stored\n• English, Spanish and Portuguese (Brazil)\n\nPRIVACY\nThe patient's photo is sent to AfterVue's AI rendering partner only to create the preview. AfterVue does not keep it, never sells it and never uses it to train AI. Full policy: getaftervue.com/privacy.html\n\nIMPORTANT\nEvery image is an AI-generated illustration, not a guarantee of results. Individual results vary. Patients should review treatment options, benefits and risks with a qualified provider before deciding on any treatment. AfterVue AI is not a medical device and does not diagnose, recommend or book treatments.\n\nSubscriptions are purchased on getaftervue.com, not in the app.",
+      "whatsNew": "First release.",
+      "privacyPolicyUrl": "https://getaftervue.com/privacy.html",
+      "marketingUrl": "https://getaftervue.com",
+      "supportUrl": null
+    },
+    "es-MX": {
+      "name": "AfterVue AI",
+      "subtitle": "Antes y después para medspas",
+      "promotionalText": "Muestra a cada paciente su posible resultado en tu iPad: labios, pómulos, mandíbula, cejas, ojeras, piel. Luego, agenda la cita. Sin puntajes de belleza. Sin juicios.",
+      "keywords": "clínica estética,rellenos,labios,arrugas,inyector,toxina,simulador,consulta,armonización facial",
+      "description": "AfterVue AI convierte la consulta en una vista previa. El paciente se sienta con tu iPad, se toma una foto de frente y otra de perfil, y ve un antes y después fotorrealista de su propio rostro con los tratamientos que ofreces, con un control deslizante que va de sutil a realzado. Diseñada para medspas, inyectores y clínicas de medicina estética.\n\nPARA CLÍNICAS\nAfterVue AI se activa con el código de clínica de tu suscripción a AfterVue. No es una app para consumidores: la clínica es dueña del dispositivo, de la sesión y de la conversación. Suscríbete y administra tu facturación en getaftervue.com.\n\nLO QUE VE EL PACIENTE\n• Su propia foto, de frente y de perfil\n• Un control deslizante de antes y después para cada tratamiento seleccionado\n• Hasta tres tratamientos combinados a la vez\n• Intensidad ajustable: Antes, Sutil, Típico y Realzado\n• La etiqueta \"Vista previa simulada\" en cada imagen\n\nTRATAMIENTOS INCLUIDOS\nLíneas de la frente y del entrecejo · patas de gallo · afinamiento mandibular · elevación de cejas · relleno de labios · relleno de pómulos · contorno de mandíbula y mentón · contorno de papada y flacidez mandibular · suavizado del dorso nasal (perfil) · rejuvenecimiento de ojeras · tensado del párpado superior · resurfacing y luminosidad de la piel · fotofacial IPL · microagujas con radiofrecuencia. Tu código de clínica habilita únicamente los tratamientos que ofreces.\n\nHECHA PARA LA SALA DE TRATAMIENTO\n• Modo kiosco: pantalla de bienvenida, reinicio automático por inactividad y bloqueo opcional con Face ID o contraseña en la configuración del personal\n• Paso de consentimiento del profesional antes de tomar cualquier foto\n• Guarda la vista previa para el paciente\n• Exportación del registro de sesiones (CSV) para la clínica; no se almacena ninguna foto de pacientes\n• Inglés, español y portugués (Brasil)\n\nPRIVACIDAD\nLa foto del paciente se envía al socio de renderizado con IA de AfterVue únicamente para crear la vista previa. AfterVue no la conserva, nunca la vende y nunca la usa para entrenar IA. Política completa: getaftervue.com/privacy.html\n\nIMPORTANTE\nCada imagen es una ilustración generada por IA, no una garantía de resultados. Los resultados varían en cada persona. Los pacientes deben revisar las opciones de tratamiento, sus beneficios y riesgos con un profesional calificado antes de decidir cualquier tratamiento. AfterVue AI no es un dispositivo médico y no diagnostica, recomienda ni agenda tratamientos.\n\nLas suscripciones se compran en getaftervue.com, no dentro de la app.",
+      "whatsNew": "Primera versión.",
+      "privacyPolicyUrl": "https://getaftervue.com/privacy.html",
+      "marketingUrl": "https://getaftervue.com",
+      "supportUrl": null
+    },
+    "pt-BR": {
+      "name": "AfterVue AI",
+      "subtitle": "Antes e depois para clínicas",
+      "promotionalText": "Mostre ao paciente seu resultado provável no iPad: lábios, bochechas, mandíbula, sobrancelhas, olheiras, pele. Depois, agende. Sem notas de beleza. Sem julgamentos.",
+      "keywords": "estética,harmonização facial,preenchimento,lábios,rugas,injetor,toxina,simulador,consulta,pele",
+      "description": "O AfterVue AI transforma a consulta em uma prévia. O paciente senta com o seu iPad, tira uma foto de frente e outra de perfil e vê um antes e depois fotorrealista do próprio rosto com os tratamentos que a sua clínica oferece, com um controle deslizante que vai do sutil ao acentuado. Feito para clínicas de estética, injetores e consultórios de harmonização facial.\n\nPARA CLÍNICAS\nO AfterVue AI é ativado com o código de clínica da sua assinatura AfterVue. Não é um app para o consumidor final: a clínica é dona do dispositivo, da sessão e da conversa. Assine e gerencie a cobrança em getaftervue.com.\n\nO QUE O PACIENTE VÊ\n• A própria foto, de frente e de perfil\n• Um controle deslizante de antes e depois para cada tratamento selecionado\n• Até três tratamentos combinados ao mesmo tempo\n• Intensidade ajustável: Antes, Sutil, Típico e Acentuado\n• O selo \"Prévia simulada\" em todas as imagens\n\nTRATAMENTOS INCLUÍDOS\nRugas da testa e da glabela · pés de galinha · afinamento da mandíbula · lifting de sobrancelhas · preenchimento labial · preenchimento de bochechas · contorno de mandíbula e queixo · contorno de papada e flacidez da linha da mandíbula · suavização do dorso nasal (perfil) · rejuvenescimento de olheiras · firmeza da pálpebra superior · resurfacing e viço da pele · fotofacial IPL · microagulhamento com radiofrequência. O seu código de clínica habilita somente os tratamentos que você oferece.\n\nFEITO PARA A SALA DE PROCEDIMENTOS\n• Modo quiosque: tela de espera, reinício automático por inatividade e bloqueio opcional por Face ID ou senha nas configurações da equipe\n• Etapa de consentimento do profissional antes de qualquer foto\n• Salve a prévia para o paciente\n• Exportação do registro de sessões (CSV) para a clínica; nenhuma foto de paciente é armazenada\n• Inglês, espanhol e português (Brasil)\n\nPRIVACIDADE\nA foto do paciente é enviada ao parceiro de renderização por IA do AfterVue apenas para criar a prévia. O AfterVue não a guarda, nunca a vende e nunca a usa para treinar IA. Política completa: getaftervue.com/privacy.html\n\nIMPORTANTE\nToda imagem é uma ilustração gerada por IA, não uma garantia de resultado. Os resultados variam de pessoa para pessoa. O paciente deve avaliar as opções de tratamento, seus benefícios e riscos com um profissional qualificado antes de decidir por qualquer procedimento. O AfterVue AI não é um dispositivo médico e não diagnostica, recomenda nem agenda tratamentos.\n\nAs assinaturas são compradas em getaftervue.com, não dentro do app.",
+      "whatsNew": "Primeira versão.",
+      "privacyPolicyUrl": "https://getaftervue.com/privacy.html",
+      "marketingUrl": "https://getaftervue.com",
+      "supportUrl": null
+    }
+  }
+}
