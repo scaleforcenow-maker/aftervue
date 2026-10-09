@@ -1,0 +1,256 @@
+# AfterVue CI.
+#
+# Runs on every pull request and on pushes to claude/** branches (the branches
+# Claude Code cloud sessions work on). Each stack job only runs when the
+# `detect` job finds that stack in the checkout, so the workflow stays green on
+# a docs-only repository and lights up as code arrives.
+#
+# Jobs:
+#   detect          which stacks exist (scripts/detect_stacks.sh)
+#   node            npm ci|install + `npm test --if-present` per package.json
+#   python          py_compile on tools/**/*.py, pytest when tests exist
+#   markdown-links  lychee link check on docs/ and _seo/
+#   secret-scan     gitleaks over the full history (scripts/secret_scan.sh)
+#   brand-rules     scripts/brand_check.py and its unit tests
+#   workflow-lint   actionlint on this file
+#   ci-summary      single status for branch protection
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - "claude/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  CI: "true"
+  NODE_VERSION: "22"
+  PYTHON_VERSION: "3.12"
+
+jobs:
+  detect:
+    name: Detect stacks
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      node_dirs: ${{ steps.detect.outputs.node_dirs }}
+      has_node: ${{ steps.detect.outputs.has_node }}
+      has_python: ${{ steps.detect.outputs.has_python }}
+      has_pytest: ${{ steps.detect.outputs.has_pytest }}
+      has_markdown: ${{ steps.detect.outputs.has_markdown }}
+      has_nvmrc: ${{ steps.detect.outputs.has_nvmrc }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Detect stacks
+        id: detect
+        run: |
+          bash scripts/detect_stacks.sh | tee -a "$GITHUB_OUTPUT"
+
+  node:
+    name: Node (${{ matrix.dir }})
+    needs: detect
+    if: needs.detect.outputs.has_node == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        dir: ${{ fromJSON(needs.detect.outputs.node_dirs) }}
+    defaults:
+      run:
+        working-directory: ${{ matrix.dir }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node (from .nvmrc)
+        if: needs.detect.outputs.has_nvmrc == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - name: Set up Node
+        if: needs.detect.outputs.has_nvmrc != 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Cache npm
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-${{ runner.os }}-${{ matrix.dir }}-${{ hashFiles(format('{0}/package-lock.json', matrix.dir), format('{0}/package.json', matrix.dir)) }}
+          restore-keys: |
+            npm-${{ runner.os }}-${{ matrix.dir }}-
+            npm-${{ runner.os }}-
+      - name: Install
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci --no-audit --no-fund
+          else
+            npm install --no-audit --no-fund
+          fi
+      - name: Test
+        run: npm test --if-present
+
+  python:
+    name: Python tooling
+    needs: detect
+    if: needs.detect.outputs.has_python == 'true' || needs.detect.outputs.has_pytest == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ runner.os }}-${{ env.PYTHON_VERSION }}-${{ hashFiles('requirements*.txt', 'tools/**/requirements*.txt', 'pyproject.toml') }}
+          restore-keys: |
+            pip-${{ runner.os }}-${{ env.PYTHON_VERSION }}-
+      - name: Install requirements
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then python -m pip install -r requirements.txt; fi
+          while IFS= read -r req; do
+            echo "pip install -r $req"
+            python -m pip install -r "$req"
+          done < <(find tools -maxdepth 3 -name 'requirements*.txt' -not -path '*/node_modules/*' 2>/dev/null)
+          if [ "${{ needs.detect.outputs.has_pytest }}" = "true" ]; then
+            python -m pip install pytest
+          fi
+      - name: py_compile tools/
+        if: needs.detect.outputs.has_python == 'true'
+        run: |
+          find tools -name '*.py' -type f \
+            -not -path '*/node_modules/*' -not -path '*/.venv/*' -print0 \
+            | xargs -0 python -m py_compile
+          echo "py_compile ok"
+      - name: pytest
+        if: needs.detect.outputs.has_pytest == 'true'
+        run: python -m pytest -q --ignore=scripts/tests
+
+  markdown-links:
+    name: Markdown links (docs/, _seo/)
+    needs: detect
+    if: needs.detect.outputs.has_markdown == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Restore lychee cache
+        uses: actions/cache@v4
+        with:
+          path: .lycheecache
+          key: lychee-${{ github.sha }}
+          restore-keys: lychee-
+      - name: Collect inputs
+        id: inputs
+        run: |
+          inputs=""
+          for d in docs _seo; do
+            if [ -d "$d" ]; then inputs="$inputs $d/**/*.md"; fi
+          done
+          echo "globs=$inputs" | tee -a "$GITHUB_OUTPUT"
+      - name: Link check
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: >-
+            --no-progress
+            --cache
+            --max-cache-age 1d
+            --max-retries 2
+            --retry-wait-time 3
+            --timeout 20
+            --max-concurrency 8
+            --accept "100..=103,200..=299,403,429"
+            --exclude "^https?://(localhost|127\.0\.0\.1)"
+            --exclude "^https?://[^/]*\.vercel\.app"
+            --exclude "^https?://(www\.)?linkedin\.com"
+            --exclude "^https?://(x|twitter)\.com"
+            --exclude "^https?://github\.com/scaleforcenow-maker/aftervue"
+            --exclude "^https?://(.*\.)?google\.com/(admin|billing)"
+            --exclude "^https?://console\.cloud\.google\.com"
+            --exclude "^https?://admin\.google\.com"
+            --exclude "^https?://claude\.ai/(code|settings)"
+            --glob-ignore-case
+            ${{ steps.inputs.outputs.globs }}
+          fail: true
+          failIfEmpty: false
+          format: markdown
+          jobSummary: true
+
+  secret-scan:
+    name: Secret scan (gitleaks, full history)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Cache gitleaks binary
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/aftervue-gitleaks
+          key: gitleaks-${{ runner.os }}-${{ hashFiles('scripts/secret_scan.sh') }}
+      - name: Rule self-test
+        run: bash scripts/tests/test_secret_scan_rules.sh
+      - name: Scan full history
+        run: bash scripts/secret_scan.sh
+
+  brand-rules:
+    name: Brand rules
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Compile scripts
+        run: python -m py_compile scripts/*.py scripts/tests/*.py
+      - name: Unit tests
+        run: python -m unittest discover -s scripts/tests -v
+      - name: Check _seo/drafts and ops
+        run: python scripts/brand_check.py
+
+  workflow-lint:
+    name: Workflow lint (actionlint)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cache actionlint binary
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/aftervue-actionlint
+          key: actionlint-${{ runner.os }}-${{ hashFiles('scripts/lint_workflows.sh') }}
+      - run: pip install pyyaml
+      - run: bash scripts/lint_workflows.sh
+
+  ci-summary:
+    name: CI summary
+    needs: [detect, node, python, markdown-links, secret-scan, brand-rules, workflow-lint]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Check results
+        env:
+          RESULTS: ${{ toJSON(needs) }}
+        run: |
+          echo "$RESULTS" | python3 -c '
+          import json, sys
+          needs = json.load(sys.stdin)
+          bad = {k: v["result"] for k, v in needs.items() if v["result"] in ("failure", "cancelled")}
+          for k, v in sorted(needs.items()):
+              print(f"{k:16s} {v[\"result\"]}")
+          sys.exit(1 if bad else 0)
+          '
