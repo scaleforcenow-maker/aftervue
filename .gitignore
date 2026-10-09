@@ -1,0 +1,16 @@
+# Dependencies
+node_modules/
+
+# Environment files and secrets
+.env
+.env.*
+!.env.example
+
+# AfterVue pricing is never published. The real Stripe catalog (with real
+# amounts) lives outside the repo; only catalog.sample.json is committed.
+tools/stripe/catalog.json
+tools/stripe/catalog.*.json
+!tools/stripe/catalog.sample.json
+
+# OS / editor noise
+.DS_Store

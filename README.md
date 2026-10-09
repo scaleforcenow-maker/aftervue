@@ -9,3 +9,5 @@ ops/SEO/BD tooling. The working copy still lives on the founder's Mac; see
   with ready-to-paste session prompts.
 - `.claude/settings.json` and `scripts/cloud_session_setup.sh`: dependency install
   that runs only in Claude Code cloud sessions.
+- `tools/stripe/`: idempotent Stripe Product/Price catalog provisioning. Reads a
+  gitignored catalog JSON (pricing is never published); see its README.
