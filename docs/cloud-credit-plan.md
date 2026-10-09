@@ -56,18 +56,16 @@ Do this before anything else, in this order:
    SessionStart hook that runs `npm install` / `pip install` only inside cloud
    sessions. Merge it so every session starts with dependencies in place.
 
-## 3. Money problems that make some sessions pointless until fixed
+## 3. Billing status (checked Oct 9)
 
-These are not cloud-session tasks, but they decide the order below.
-
-| Email | Date | Effect |
+| Email | Date | Status |
 | --- | --- | --- |
-| Google Cloud: billing account `01537A-F66626-2687E3` suspended | Oct 1 | Vertex AI (the preview API) and the planned Cloud Run deploys stop working. Google terminates the billing account and its projects 30 days after the notice, so about **Oct 31**. Fix at console.cloud.google.com/billing/01537A-F66626-2687E3/settings. |
-| Google Workspace payment failure, suspension threatened Oct 6 | Oct 1 | Mail still flowed on Oct 7 so it may be resolved. Confirm in admin.google.com -> Billing. |
-| Gemini prepay credits depleted, app serving the demo sample | Sept 9 | Superseded by the Vertex move, but the suspension above puts the preview back in the same state. |
+| Google Cloud: billing account suspended for failed payment | Oct 1 | **Resolved.** Google confirmed the account "is in good standing at this time" on Oct 3. Vertex AI and Cloud Run deploys are unblocked. |
+| Google Workspace payment declined, suspension threatened Oct 6 | Oct 1 | **Resolved.** Payment received Oct 2; next invoice due Oct 30. |
+| Gemini prepay credits depleted, app served the demo sample | Sept 9 | Superseded by the move to Vertex AI (postpay) on Sept 16. |
 
-Fix the Google Cloud payment first. Sessions 1 through 4 below work without it; 5
-and 6 need it.
+Nothing in billing blocks the sessions below any more. The remaining gate is the code
+push in section 2.
 
 ## 4. Session plan, in priority order
 
@@ -255,3 +253,30 @@ Start each at claude.ai/code with repository `scaleforcenow-maker/aftervue`.
   Google Cloud free trial Sept 12
 - Claude Code docs: cloud sessions, cloud environments (network secrets,
   SessionStart hooks, Auto-fix)
+
+## 7. What was launched on Oct 9 (status log)
+
+The codebase had not been pushed yet, so the sessions below were chosen because they
+can be done from the company's documents alone and drop into the main codebase later.
+Each runs on its own branch and opens a draft PR against `claude/task-review-credit-usage-5s4irr`.
+
+| Session | Branch | Output |
+| --- | --- | --- |
+| SEO article, Cluster A | `claude/seo-cluster-a` | `_seo/drafts/ai-before-and-after-simulator-medspa.md` |
+| SEO article, Cluster D | `claude/seo-cluster-d` | `_seo/drafts/medspa-marketing-software.md` |
+| SEO article, Cluster G | `claude/seo-cluster-g` | `_seo/drafts/medspa-consult-room-technology.md` |
+| SEO article, Cluster J | `claude/seo-cluster-j` | `_seo/drafts/medspa-website-design.md` |
+| Stripe catalog provisioning | `claude/stripe-catalog` | `tools/stripe/` idempotent script, tests, sample catalog (real amounts stay out of the public repo) |
+| Vertex resilience module | `claude/vertex-resilience` | `packages/vertex-resilience/` queue, limiter, backoff, fallback, counters, tests |
+| App Store localized metadata | `claude/appstore-localized-metadata` | `ops/41_App_Store_Localized_Metadata.md`, `ops/41_metadata.json`, length checker |
+| Repo hygiene and CI | `claude/repo-hygiene-ci` | `.gitignore`, gitleaks config, GitHub Actions CI, brand-rule checker, `CLAUDE.md`, PR template |
+| Cloud Run + Vertex infra | `claude/infra-cloud-run` | `infra/terraform`, preview-api skeleton, Cloud Build, migration doc |
+| Lead-management emails | `claude/lead-emails` | `packages/lead-emails/` eight Postmark templates with previews and tests |
+
+Recurring: a Routine named "AfterVue weekly SEO article (cloud session)" fires every
+Monday at 7:47 AM ET and writes one new article as a draft PR. Disable it at
+claude.ai -> Routines if the cadence should change.
+
+Still waiting on the code push for: secrets audit of the real history, the CI run
+against the real test suites, wiring the resilience module into `/api/generate`, the
+Cloud Run deploys, Turnstile and Sentry in the live functions, per-tenant tokens.
