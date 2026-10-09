@@ -56,16 +56,24 @@ Templates 1 to 4 carry lead information and have a **PII guard**:
 - the schema only declares first-name fields, never phone, email, treatment
   interests or photos;
 - any field whose name contains `phone`, `email`, `e-mail`, `photo` or
-  `treatment` is rejected at any depth, even if a future schema change were
-  to declare it;
+  `treatment`, or an obvious synonym (`mobile`, `selfie`, `picture`, `image`,
+  `address`, `birth`, `ssn`, `procedure`, `diagnos`), is rejected at any
+  depth and in any casing, even if a future schema change were to declare it;
 - any plain string value that looks like an email address or a phone number
-  (eight or more digits with optional separators) is rejected.
+  (eight or more digits with optional separators) is rejected;
+- URL values are checked too: a query parameter whose name matches the list
+  above, or whose decoded value (or the path or fragment) contains an email
+  address or a formatted phone number such as `(555) 010-1234`, is rejected.
+  Bare numeric ids in URLs are allowed, so `?lead=12345678` passes and
+  `?phone=5550101234` does not.
 
 All templates reject unknown fields at any depth, enforce types, enum values,
 maximum lengths, single-line strings, valid ISO-8601 dates, valid IANA time
-zones and `https` URLs. Failed validation throws `TemplateDataError` with
-`code` (`unknown`, `required`, `type`, `max`, `min`, `enum`, `url`, `date`,
-`timezone`, `newline`, `pii`) and `field` (dotted path).
+zones and `https` URLs, and reject any string containing `!` so the voice
+rule holds whatever the caller passes. Failed validation throws
+`TemplateDataError` with `code` (`unknown`, `required`, `type`, `max`, `min`,
+`enum`, `url`, `date`, `timezone`, `newline`, `voice`, `pii`) and `field`
+(dotted path).
 
 ### Render output
 
@@ -78,8 +86,8 @@ Options:
 | Option | Default | Meaning |
 | --- | --- | --- |
 | `utm` | `false` | When `true`, links get `utm_source=aftervue-leads`, `utm_medium=email`, `utm_campaign=<template>`. Signed links (`magicLinkUrl`, `acceptUrl`, `downloadUrl`) are never decorated because an extra query parameter would break the signature. |
-| `logoSrc` | `cid:aftervue-mark` | Reference for the AfterVue mark. Pass a hosted `https` URL to skip the inline attachment. The mark is never embedded as base64. |
-| `supportAlias` | `support@getaftervue.com` | Footer address. |
+| `logoSrc` | `cid:aftervue-mark` | Reference for the AfterVue mark. Pass a hosted `https` URL to skip the inline attachment. Only `cid:` and `https:` are accepted; `data:` and any other scheme throw. |
+| `supportAlias` | `support@getaftervue.com` | Footer address. Must be a plain address; it is HTML-escaped on output. |
 
 `listTemplates()` returns `{ name, description, guardPii }` for each template,
 and `TEMPLATES[name].schema` exposes the schema for documentation or form
@@ -121,10 +129,16 @@ selectors are covered too. Gmail's partial inversion is left alone: plum on
 white and white on plum invert to readable pairs.
 
 Voice: no exclamation marks, no marketing copy, no beauty-score or outcome
-language. `render()` throws if a subject or preheader contains `!`, and the
-tests check the visible HTML text and the text part. The raw HTML does
-contain `!` in the DOCTYPE, in Outlook conditional comments and in
-`!important` inside the dark-mode stylesheet; none of it is visible.
+language. Validation rejects `!` in every string field (code `voice`), and
+`render()` throws if the finished text part contains one, which covers every
+visible string in both parts because both are built from the same content
+model. The raw HTML does contain `!` in the DOCTYPE, in Outlook conditional
+comments and in `!important` inside the dark-mode stylesheet; none of it is
+visible.
+
+With images blocked the mark's alt text ("AfterVue") is shown; the logo link
+carries an explicit colour and a dark-mode override so the alt text stays
+readable on both page colours.
 
 ## Postmark adapter
 
@@ -137,11 +151,18 @@ contain `!` in the DOCTYPE, in Outlook conditional comments and in
   No `TemplateId` or `TemplateModel`. Open and link tracking are off, because
   tracking pixels and rewritten links are not appropriate for PHI-adjacent
   mail.
-- `createPostmarkSender({ serverToken, messageStream, dryRun, outDir, fetch })`
+- `createPostmarkSender({ serverToken, messageStream, dryRun, outDir, fetch, timeoutMs })`
   returns `{ send(rendered, envelope) }`. In dry-run mode it writes an RFC 5322
-  `.eml` (multipart/alternative, or multipart/related with the logo attached)
-  to `outDir` and never touches the network. Otherwise it posts with `fetch`
-  and throws `PostmarkError` with `status` and `errorCode` on failure.
+  `.eml` (multipart/alternative, or multipart/related with the logo attached;
+  quoted-printable bodies, CRLF line endings, no line over 998 characters)
+  to `outDir` and never touches the network. The file name is derived from
+  the tag after stripping anything that is not a letter, digit, `_` or `-`,
+  so a tag can never point outside `outDir`. Otherwise it posts with `fetch`,
+  aborts after `timeoutMs` (default 10 s) and throws `PostmarkError` with
+  `status` and `errorCode` on failure (`errorCode: 'timeout'` on abort).
+- Envelope limits mirror Postmark's: at most 50 addresses in each of `to`,
+  `cc` and `bcc`, a single-line tag of at most 1000 characters, and no line
+  breaks in any address. Violations throw `TypeError` before anything is sent.
 - The logo: templates reference `cid:aftervue-mark`. Pass
   `inlineLogo: { content: <base64 of the PNG>, contentType: 'image/png' }` in
   the envelope to attach it (read the file at send time), or render with
@@ -168,13 +189,19 @@ npm test
 
 `node:test`, no test framework. Covers: every template renders with its
 fixture; strict validation (unknown, nested unknown, missing, wrong type, bad
-URL, bad date, bad time zone, over-long, multi-line); PII rejection by key and
-by value on templates 1 to 4; no `!` in subject, preheader, visible HTML or
-text; subject length with maximum-length inputs; text part present and
-carrying every link; UTM only when the flag is set and never on signed links;
-HTML escaping; CID and hosted logo; Postmark message shape, configurable
-`MessageStream`, dry-run `.eml` output, send through a mocked `fetch`, error
-surfacing.
+URL, bad date, bad time zone, over-long, multi-line); PII rejection by key
+(any depth, any casing), by value (plain strings and nested strings) and in
+URLs on templates 1 to 4; `!` rejected from every string field and never
+present in subject, preheader, visible HTML or text; subject length with
+every field at its schema maximum; text part present and carrying every
+link; UTM only when the flag is set and never on signed links; HTML escaping
+of data and of the support alias; `logoSrc` limited to `cid:` and `https:`;
+alt text on the only image with a dark-mode colour; Postmark message shape
+limited to documented field names, configurable `MessageStream`, recipient
+and tag limits, header-injection resistance, dry-run `.eml` output that is
+CRLF, 7-bit and under the 998-character line limit, safe dry-run file names,
+send through a mocked `fetch`, request timeout, error surfacing; fixtures
+contain no addresses, no phone shapes and only placeholder names.
 
 ## Fixtures
 

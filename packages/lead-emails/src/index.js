@@ -8,8 +8,9 @@
  *                         not a signed URL gets utm_source=aftervue-leads,
  *                         utm_medium=email and utm_campaign=<template>.
  *   logoSrc               'cid:aftervue-mark' (default) or an https URL for the
- *                         AfterVue mark. Never base64.
+ *                         AfterVue mark. Never base64; any other scheme throws.
  *   supportAlias          footer address, default support@getaftervue.com.
+ *                         Must be a plain address (no display name, no markup).
  */
 
 import { validateTemplateData, TemplateDataError } from './validate.js';
@@ -51,11 +52,24 @@ function assertNoExclamation(where, value) {
   }
 }
 
+const LOGO_SRC = /^(cid:[A-Za-z0-9._-]+|https:\/\/\S+)$/;
+const SUPPORT_ALIAS = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+
+function checkOptions(options) {
+  if (options.logoSrc !== undefined && (typeof options.logoSrc !== 'string' || !LOGO_SRC.test(options.logoSrc))) {
+    throw new TypeError('render: options.logoSrc must be "cid:<id>" or an https URL (never data: or any other scheme)');
+  }
+  if (options.supportAlias !== undefined && (typeof options.supportAlias !== 'string' || !SUPPORT_ALIAS.test(options.supportAlias))) {
+    throw new TypeError('render: options.supportAlias must be a plain email address');
+  }
+}
+
 export function render(templateName, data, options = {}) {
   const template = TEMPLATES[templateName];
   if (!template) {
     throw new TemplateDataError(`Unknown template "${templateName}"`, { code: 'template' });
   }
+  checkOptions(options);
   const clean = validateTemplateData(template, data);
   const utm = options.utm === true;
 
@@ -76,11 +90,16 @@ export function render(templateName, data, options = {}) {
     supportAlias: options.supportAlias
   };
 
+  const text = renderText(content, layoutOpts);
+  // The text part is built from the same content model as the HTML with no
+  // markup, so checking it covers every visible string in both parts.
+  assertNoExclamation('rendered email', text);
+
   return {
     template: template.name,
     subject: content.subject,
     preheader: content.preheader,
     html: renderHtml(content, layoutOpts),
-    text: renderText(content, layoutOpts)
+    text
   };
 }

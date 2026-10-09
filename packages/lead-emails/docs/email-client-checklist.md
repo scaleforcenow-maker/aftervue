@@ -31,14 +31,17 @@ or uploaded to a testing service.
 | Plain-text part present | `renderText()` from the same content model; test asserts every HTML link appears in the text |
 | Preheader present | Hidden `div` with zero-width padding; test asserts it appears in the HTML |
 | Subject under 60 chars | `SUBJECT_MAX = 59`, tested with maximum-length names |
-| No exclamation marks | `render()` throws on subject/preheader; tests check visible HTML and text |
+| No exclamation marks | Validation rejects `!` in any string field; `render()` throws if the text part carries one; tests check subject, preheader, visible HTML and text |
 | No base64 images | Test asserts no `src="data:` |
 | Logo by CID or hosted URL | `cid:aftervue-mark` default, `logoSrc` option tested |
 | Dark-mode declarations | `color-scheme` and `supported-color-schemes` metas, `prefers-color-scheme` block, `[data-ogsc]` selectors |
-| No PII beyond first names (templates 1 to 4) | Schema, key guard, value guard; output scanned for phone and email shapes |
+| No PII beyond first names (templates 1 to 4) | Schema, key guard (any depth, any casing), value guard on strings and on URL query/path/fragment; output scanned for phone and email shapes |
 | Links UTM-tagged only when flagged | Tested on and off, signed links excluded |
 | `role="presentation"` on layout tables | Every layout `<table>` |
-| Alt text on the only image | `alt="AfterVue"` so blocked images still show the brand |
+| Alt text on the only image | `alt="AfterVue"` so blocked images still show the brand; the logo link has an explicit colour plus a dark-mode override so the alt text is readable on the dark page |
+| Outlook for Windows fonts | MSO conditional `<style>` with `!important` forces Arial for body and Georgia for the heading, since inline font stacks would otherwise fall to Times New Roman |
+| Outlook.com dark mode | `[data-ogsc]` for text and `[data-ogsb]` for backgrounds |
+| Dry-run `.eml` is RFC 5322 clean | Quoted-printable bodies, CRLF only, no line over 998 characters, 7-bit; tested for every template |
 | `lang="en"` on `<html>` | Set in the layout |
 
 ## Rendering checks (manual, per client)

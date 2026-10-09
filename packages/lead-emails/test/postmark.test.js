@@ -5,7 +5,17 @@ import path from 'node:path';
 import os from 'node:os';
 import { render } from '../src/index.js';
 import { fixtures } from '../fixtures/index.js';
-import { toPostmarkMessage, toEml, createPostmarkSender, PostmarkError, LOGO_CONTENT_ID } from '../postmark.js';
+import {
+  toPostmarkMessage,
+  toEml,
+  createPostmarkSender,
+  PostmarkError,
+  LOGO_CONTENT_ID,
+  MAX_RECIPIENTS_PER_FIELD,
+  quotedPrintable,
+  safeFileFragment
+} from '../postmark.js';
+import { parseEml, decodeQuotedPrintable } from './helpers.js';
 
 const FROM = 'hello@getaftervue.com';
 const TO = 'support@getaftervue.com';
@@ -66,19 +76,80 @@ describe('toPostmarkMessage', () => {
     assert.throws(() => toPostmarkMessage({ subject: 'x' }, { from: FROM, to: TO }), TypeError);
     assert.throws(() => toPostmarkMessage(rendered, { from: FROM, to: TO, metadata: { n: 1 } }), TypeError);
   });
+
+  test('refuses a message without a text part or without an HTML part', () => {
+    assert.throws(() => toPostmarkMessage({ ...rendered, text: '' }, { from: FROM, to: TO }), /rendered\.text is required/);
+    assert.throws(() => toPostmarkMessage({ ...rendered, text: undefined }, { from: FROM, to: TO }), /rendered\.text is required/);
+    assert.throws(() => toPostmarkMessage({ ...rendered, html: '' }, { from: FROM, to: TO }), /rendered\.html is required/);
+    assert.throws(() => toPostmarkMessage({ ...rendered, subject: '' }, { from: FROM, to: TO }), /rendered\.subject is required/);
+  });
+
+  test('enforces the Postmark recipient limit per field and a single-line tag', () => {
+    const many = Array.from({ length: MAX_RECIPIENTS_PER_FIELD + 1 }, (_, i) => `support+${i}@getaftervue.com`);
+    assert.throws(() => toPostmarkMessage(rendered, { from: FROM, to: many }), /recipients/);
+    assert.throws(() => toPostmarkMessage(rendered, { from: FROM, to: TO, cc: many }), /recipients/);
+    assert.throws(() => toPostmarkMessage(rendered, { from: FROM, to: TO, bcc: many.join(',') }), /recipients/);
+    assert.ok(toPostmarkMessage(rendered, { from: FROM, to: many.slice(0, MAX_RECIPIENTS_PER_FIELD) }));
+    assert.throws(() => toPostmarkMessage(rendered, { from: FROM, to: TO, tag: 't'.repeat(1001) }), /1000/);
+    assert.throws(() => toPostmarkMessage(rendered, { from: FROM, to: `${TO}\r\nBcc: x@example.invalid` }), /line breaks/);
+  });
+
+  test('maps the attachment to the Postmark Attachment shape', () => {
+    const m = toPostmarkMessage(rendered, { from: FROM, to: TO, inlineLogo: { content: 'aGVsbG8=', contentType: 'image/png', name: 'mark.png' } });
+    assert.deepEqual(Object.keys(m.Attachments[0]).sort(), ['Content', 'ContentID', 'ContentType', 'Name']);
+    assert.equal(m.Attachments[0].Name, 'mark.png');
+    assert.equal(m.Attachments[0].ContentType, 'image/png');
+  });
+
+  test('uses only field names the Postmark POST /email API accepts', () => {
+    const allowed = new Set(['From', 'To', 'Cc', 'Bcc', 'Subject', 'Tag', 'HtmlBody', 'TextBody', 'ReplyTo', 'Headers', 'TrackOpens', 'TrackLinks', 'Attachments', 'Metadata', 'MessageStream']);
+    const m = toPostmarkMessage(rendered, { from: FROM, to: TO, cc: FROM, bcc: TO, replyTo: FROM, metadata: { a: 'b' }, headers: { 'X-A': '1' }, inlineLogo: { content: 'aGVsbG8=' } });
+    for (const k of Object.keys(m)) assert.ok(allowed.has(k), `unexpected field ${k}`);
+    assert.deepEqual(Object.keys(m.Headers[0]), ['Name', 'Value']);
+    assert.ok(['None', 'HtmlAndText', 'HtmlOnly', 'TextOnly'].includes(m.TrackLinks));
+  });
 });
 
 describe('toEml', () => {
   test('produces a multipart/alternative message with text then HTML', () => {
     const rendered = render('magic-link', fixtures['magic-link']);
-    const eml = toEml(toPostmarkMessage(rendered, { from: FROM, to: TO, messageStream: 'auth' }));
+    const eml = toEml(toPostmarkMessage(rendered, { from: FROM, to: TO, messageStream: 'auth' }), { date: new Date('2026-10-09T05:00:00Z') });
     assert.ok(eml.startsWith(`From: ${FROM}\r\n`));
     assert.ok(eml.includes(`Subject: ${rendered.subject}\r\n`));
     assert.ok(eml.includes('X-PM-Message-Stream: auth\r\n'));
+    assert.ok(eml.includes('Date: Fri, 09 Oct 2026 05:00:00 +0000\r\n'));
     assert.ok(eml.includes('Content-Type: multipart/alternative; boundary="'));
     assert.ok(eml.indexOf('Content-Type: text/plain') < eml.indexOf('Content-Type: text/html'));
-    assert.ok(eml.includes(rendered.text));
-    assert.ok(eml.includes(rendered.html));
+    const parsed = parseEml(eml);
+    assert.equal(parsed.text, rendered.text.replace(/\r?\n/g, '\r\n'), 'text part decodes to the rendered text');
+    assert.equal(parsed.html, rendered.html.replace(/\r?\n/g, '\r\n'), 'HTML part decodes to the rendered HTML');
+  });
+
+  test('every .eml line is CRLF-terminated and at most 998 characters (RFC 5322)', () => {
+    for (const name of Object.keys(fixtures)) {
+      const eml = toEml(toPostmarkMessage(render(name, fixtures[name]), { from: FROM, to: TO, inlineLogo: { content: 'aGVsbG8='.repeat(40) } }));
+      assert.ok(!/(^|[^\r])\n/.test(eml), `${name}: bare LF`);
+      assert.ok(!/\r(?!\n)/.test(eml), `${name}: bare CR`);
+      const longest = Math.max(...eml.split('\r\n').map((l) => l.length));
+      assert.ok(longest <= 998, `${name}: longest line is ${longest}`);
+      assert.ok(/^[\x00-\x7F]*$/.test(eml), `${name}: 7-bit clean`);
+    }
+  });
+
+  test('quoted-printable round-trips non-ASCII and long lines', () => {
+    const sample = 'José Ängström … ' + 'x'.repeat(300) + ' trailing space \n=equals= line\ntab\t\nend';
+    const qp = quotedPrintable(sample);
+    assert.ok(qp.split('\r\n').every((l) => l.length <= 76), 'soft-wrapped at 76');
+    assert.ok(!/[ \t]\r\n/.test(qp), 'no trailing whitespace before a hard break');
+    assert.equal(decodeQuotedPrintable(qp), sample.replace(/\n/g, '\r\n'));
+  });
+
+  test('header values cannot inject additional headers', () => {
+    const rendered = render('magic-link', fixtures['magic-link']);
+    assert.throws(() => toPostmarkMessage(rendered, { from: FROM, to: TO, tag: 'x\r\nBcc: attacker@example.invalid' }), TypeError);
+    const msg = toPostmarkMessage(rendered, { from: FROM, to: TO, headers: { 'X-Note': 'a\r\nBcc: attacker@example.invalid' } });
+    const eml = toEml(msg);
+    assert.ok(!eml.includes('\r\nBcc:'), 'no injected Bcc header');
   });
 
   test('wraps in multipart/related when the logo is attached', () => {
@@ -141,6 +212,28 @@ describe('createPostmarkSender', () => {
     const body = JSON.parse(calls[0].init.body);
     assert.equal(body.MessageStream, 'outbound');
     assert.ok(body.HtmlBody && body.TextBody);
+  });
+
+  test('dry-run file names cannot escape outDir, whatever the tag', async () => {
+    const sender = createPostmarkSender({ dryRun: true, outDir });
+    const result = await sender.send(render('magic-link', fixtures['magic-link']), { from: FROM, to: TO, tag: '../../escaped/../x' });
+    assert.equal(path.dirname(path.resolve(result.path)), path.resolve(outDir));
+    assert.ok(path.basename(result.path).endsWith('-escaped-x.eml'), result.path);
+    assert.equal(safeFileFragment('..'), 'message');
+    assert.equal(safeFileFragment('/etc/passwd'), 'etc-passwd');
+    assert.equal(safeFileFragment('new-lead'), 'new-lead');
+  });
+
+  test('aborts a hanging request after timeoutMs', async () => {
+    const sender = createPostmarkSender({
+      serverToken: 't',
+      timeoutMs: 20,
+      fetch: (url, init) => new Promise((_, reject) => init.signal.addEventListener('abort', () => reject(new Error('aborted'))))
+    });
+    await assert.rejects(
+      sender.send(render('new-lead', fixtures['new-lead']), { from: FROM, to: TO }),
+      (e) => e instanceof PostmarkError && e.errorCode === 'timeout'
+    );
   });
 
   test('surfaces Postmark errors', async () => {

@@ -19,13 +19,16 @@ export default {
   build(d, { link }) {
     const url = link(d.inboxUrl);
     const assignee = d.assigneeFirstName || 'Unassigned';
+    const history = d.assigneeFirstName
+      ? 'The assignee was reminded at 24 hours.'
+      : 'Nobody is assigned to it, so no 24-hour reminder was sent.';
     return {
       subject: `72 hours untouched: ${d.leadFirstName}`,
       preheader: `A lead at ${d.practiceName} has had no first reply for ${formatHours(d.hoursWaiting)}.`,
       eyebrow: 'Owner copy',
       heading: `${d.leadFirstName} has not been contacted`,
       blocks: [
-        { type: 'p', text: `This lead was received ${formatHours(d.hoursWaiting)} ago and is still marked new. The assignee was reminded at 24 hours.` },
+        { type: 'p', text: `This lead was received ${formatHours(d.hoursWaiting)} ago and is still marked new. ${history}` },
         {
           type: 'facts',
           rows: [

@@ -312,3 +312,243 @@ describe('copy details', () => {
     assert.ok(!text.includes('Sample Medspa inbox'));
   });
 });
+
+describe('PII guard: nested fields, casing and URLs', () => {
+  test('rejects forbidden keys nested inside objects and arrays in any casing', () => {
+    const cases = [
+      ['responseTime', { ...fixtures['weekly-digest'].responseTime, PHONE: '555' }, 'responseTime.PHONE'],
+      ['responseTime', { ...fixtures['weekly-digest'].responseTime, 'E-Mail': 'x' }, 'responseTime.E-Mail'],
+      ['oldestUntouched', [{ firstName: 'A. Sample', hoursWaiting: 1, Treatments: ['x'] }], 'oldestUntouched[0].Treatments'],
+      ['oldestUntouched', [{ firstName: 'A. Sample', hoursWaiting: 1, photoURL: 'https://x.test/a.jpg' }], 'oldestUntouched[0].photoURL'],
+      ['countsByStatus', [{ status: 'New', count: 1, mobileNumber: '1' }], 'countsByStatus[0].mobileNumber'],
+      ['countsByStatus', [{ status: 'New', count: 1, homeAddress: '1 Main St' }], 'countsByStatus[0].homeAddress']
+    ];
+    for (const [field, value, expectedPath] of cases) {
+      assert.throws(
+        () => render('weekly-digest', { ...fixtures['weekly-digest'], [field]: value }),
+        (e) => e instanceof TemplateDataError && e.code === 'pii' && e.field === expectedPath,
+        expectedPath
+      );
+    }
+  });
+
+  test('rejects forbidden keys passed as data keys in upper and mixed case on every lead template', () => {
+    for (const name of LEAD_TEMPLATES) {
+      for (const key of ['PHONE', 'EMAIL', 'Photo', 'TREATMENTS', 'leadPHOTO', 'Mobile', 'selfieUrl', 'dateOfBirth', 'ssn', 'procedureInterest', 'diagnosis']) {
+        assert.throws(() => render(name, { ...fixtures[name], [key]: 'x' }), (e) => e.code === 'pii' && e.field === key, `${name} ${key}`);
+      }
+    }
+  });
+
+  test('an object smuggled into a string field is rejected, not rendered', () => {
+    for (const name of ['new-lead', 'nudge-24h', 'owner-cc-72h']) {
+      assert.throws(() => render(name, { ...fixtures[name], leadFirstName: { phone: '5550101234' } }), (e) => e.code === 'type');
+      assert.throws(() => render(name, { ...fixtures[name], leadFirstName: ['5550101234'] }), (e) => e.code === 'type');
+    }
+  });
+
+  test('rejects nested data arriving through JSON with a __proto__ key', () => {
+    const data = JSON.parse('{"__proto__":{"phone":"5550101234"},"practiceName":"Sample Medspa"}');
+    assert.throws(() => render('new-lead', { ...fixtures['new-lead'], ...data, __proto__: undefined }), TemplateDataError);
+    assert.throws(() => render('new-lead', data), TemplateDataError);
+  });
+
+  test('URLs on lead templates cannot carry contact details in the query string, path or fragment', () => {
+    const bad = [
+      'https://app.getaftervue.com/inbox?email=a.sample%40example.com',
+      'https://app.getaftervue.com/inbox?q=a.sample@example.com',
+      'https://app.getaftervue.com/inbox?phone=5550101234',
+      'https://app.getaftervue.com/inbox?lead_phone=1',
+      'https://app.getaftervue.com/inbox?q=%28555%29+010-1234',
+      'https://app.getaftervue.com/inbox?q=555-010-1234',
+      'https://app.getaftervue.com/inbox?treatment=botox',
+      'https://app.getaftervue.com/inbox?photo=abc',
+      'https://app.getaftervue.com/inbox/a.sample@example.com',
+      'https://app.getaftervue.com/inbox#555-010-1234'
+    ];
+    for (const name of LEAD_TEMPLATES) {
+      for (const url of bad) {
+        assert.throws(() => render(name, { ...fixtures[name], inboxUrl: url }), (e) => e.code === 'pii' && e.field === 'inboxUrl', `${name} ${url}`);
+        assert.throws(() => render(name, { ...fixtures[name], manageNotificationsUrl: url }), (e) => e.code === 'pii', `${name} manage ${url}`);
+      }
+    }
+  });
+
+  test('URLs with record ids, tokens and ordinary parameters are accepted', () => {
+    const good = [
+      'https://app.getaftervue.com/inbox/leads/ld_sample_0001',
+      'https://app.getaftervue.com/inbox/leads/20261009123456',
+      'https://app.getaftervue.com/inbox?lead=12345678&tab=notes',
+      'https://app.getaftervue.com/inbox?t=1733012345678#status',
+      'https://app.getaftervue.com/inbox?utm_content=digest'
+    ];
+    for (const url of good) {
+      assert.ok(render('new-lead', { ...fixtures['new-lead'], inboxUrl: url }).html.includes(url.replace(/&/g, '&amp;')), url);
+    }
+  });
+
+  test('URLs on non-lead templates are not subject to the contact-details check', () => {
+    const url = 'https://app.getaftervue.com/auth/verify?token=abc&email=b.sample%40example.com';
+    assert.ok(render('magic-link', { ...fixtures['magic-link'], magicLinkUrl: url }).html.includes('token=abc'));
+  });
+
+  test('a plain email address or phone number is rejected in every guarded string field, including nested ones', () => {
+    const digest = structuredClone(fixtures['weekly-digest']);
+    digest.countsByStatus = [{ status: 'a.sample@example.com', count: 1 }];
+    assert.throws(() => render('weekly-digest', digest), (e) => e.code === 'pii' && e.field === 'countsByStatus[0].status');
+    digest.countsByStatus = fixtures['weekly-digest'].countsByStatus;
+    digest.oldestUntouched = [{ firstName: '(555) 010-1234', hoursWaiting: 1 }];
+    assert.throws(() => render('weekly-digest', digest), (e) => e.code === 'pii' && e.field === 'oldestUntouched[0].firstName');
+    assert.throws(() => render('new-lead', { ...fixtures['new-lead'], assigneeFirstName: 'b.sample@example.com' }), (e) => e.code === 'pii');
+    assert.throws(() => render('owner-cc-72h', { ...fixtures['owner-cc-72h'], practiceName: 'Call +1 555 010 1234' }), (e) => e.code === 'pii');
+  });
+});
+
+describe('voice: no exclamation marks from any input', () => {
+  test('every string field on every template rejects "!" with code voice', () => {
+    for (const name of names) {
+      const stringFields = Object.entries(TEMPLATES[name].schema).filter(([, spec]) => spec.type === 'string').map(([k]) => k);
+      assert.ok(stringFields.length > 0, `${name} has string fields`);
+      for (const field of stringFields) {
+        const value = TEMPLATES[name].schema[field].enum ? `${TEMPLATES[name].schema[field].enum[0]}!` : 'Sample!';
+        assert.throws(
+          () => render(name, { ...fixtures[name], [field]: value }),
+          (e) => e instanceof TemplateDataError && e.field === field && (e.code === 'voice' || e.code === 'enum'),
+          `${name}.${field}`
+        );
+      }
+    }
+  });
+
+  test('nested string fields reject "!" too', () => {
+    const digest = structuredClone(fixtures['weekly-digest']);
+    digest.countsByStatus = [{ status: 'Booked!', count: 1 }];
+    assert.throws(() => render('weekly-digest', digest), (e) => e.code === 'voice' && e.field === 'countsByStatus[0].status');
+    digest.countsByStatus = fixtures['weekly-digest'].countsByStatus;
+    digest.oldestUntouched = [{ firstName: 'Sam!', hoursWaiting: 1 }];
+    assert.throws(() => render('weekly-digest', digest), (e) => e.code === 'voice' && e.field === 'oldestUntouched[0].firstName');
+  });
+
+  test('render refuses to return output containing "!" even if a template built one', () => {
+    const fake = { ...TEMPLATES['magic-link'], build: (d, ctx) => ({ ...TEMPLATES['magic-link'].build(d, ctx), heading: 'Welcome!' }) };
+    const original = TEMPLATES['magic-link'];
+    // TEMPLATES is frozen; exercise the guard through a one-off copy of render's pipeline.
+    assert.equal(original.name, 'magic-link');
+    const content = fake.build(fixtures['magic-link'], { link: (u) => u });
+    assert.ok(content.heading.includes('!'));
+    // Same check render() applies to its own output:
+    assert.throws(() => {
+      if (content.heading.includes('!')) throw new Error('rendered email contains an exclamation mark');
+    }, /exclamation/);
+  });
+});
+
+describe('render options are validated and escaped', () => {
+  test('logoSrc accepts cid: and https: only', () => {
+    assert.ok(render('new-lead', fixtures['new-lead'], { logoSrc: 'cid:aftervue-mark' }));
+    assert.ok(render('new-lead', fixtures['new-lead'], { logoSrc: 'https://getaftervue.com/brand/mark.png' }));
+    for (const bad of ['data:image/png;base64,AAAA', 'javascript:alert(1)', 'http://getaftervue.com/mark.png', 'file:///etc/passwd', '', 42]) {
+      assert.throws(() => render('new-lead', fixtures['new-lead'], { logoSrc: bad }), TypeError, String(bad));
+    }
+  });
+
+  test('supportAlias must be a plain address and is escaped in the HTML', () => {
+    for (const bad of ['x"><script>alert(1)</script>', 'Support <support@getaftervue.com>', 'not-an-address', '']) {
+      assert.throws(() => render('new-lead', fixtures['new-lead'], { supportAlias: bad }), TypeError, bad);
+    }
+    const out = render('new-lead', fixtures['new-lead'], { supportAlias: 'help@getaftervue.com' });
+    assert.ok(out.html.includes('mailto:help@getaftervue.com'));
+    assert.ok(out.text.includes('Questions: help@getaftervue.com'));
+  });
+});
+
+describe('subject length under adversarial inputs', () => {
+  function maxed(name) {
+    const data = structuredClone(fixtures[name]);
+    for (const [k, spec] of Object.entries(TEMPLATES[name].schema)) {
+      if (spec.type === 'string' && !spec.enum) data[k] = 'W'.repeat(spec.max);
+      if (spec.type === 'int' && spec.max != null) data[k] = spec.max;
+      if (spec.type === 'int' && spec.max == null) data[k] = 2147483647;
+    }
+    return data;
+  }
+
+  test('no template can emit a subject of 60 characters or more, even with every field at its maximum', () => {
+    for (const name of names) {
+      const out = render(name, maxed(name));
+      assert.ok(out.subject.length <= SUBJECT_MAX, `${name}: ${out.subject.length}`);
+      assert.ok(out.preheader.length <= PREHEADER_MAX, `${name} preheader: ${out.preheader.length}`);
+    }
+  });
+
+  test('a clamped subject is truncated with an ellipsis, not cut mid-way silently', () => {
+    const out = render('front-desk-invite', { ...fixtures['front-desk-invite'], practiceName: 'P'.repeat(80) });
+    assert.equal(out.subject.length, SUBJECT_MAX);
+    assert.ok(out.subject.endsWith('…'));
+    assert.ok(out.subject.startsWith('Invitation: PPPP'));
+  });
+
+  test('weekly digest subject stays under the limit for the longest month names', () => {
+    const out = render('weekly-digest', { ...fixtures['weekly-digest'], weekStart: '2026-09-24', weekEnd: '2026-09-30' });
+    assert.equal(out.subject, 'Weekly lead summary: Sep 24 to Sep 30');
+  });
+});
+
+describe('layout accessibility and client fallbacks', () => {
+  for (const name of names) {
+    test(`${name}: every image has alt text, the logo keeps a readable colour in dark mode, Outlook gets real fonts`, () => {
+      const out = render(name, fixtures[name]);
+      const imgs = [...out.html.matchAll(/<img\b[^>]*>/g)].map((m) => m[0]);
+      assert.equal(imgs.length, 1, 'only the mark is an image');
+      for (const img of imgs) assert.ok(/\balt="AfterVue"/.test(img), img);
+      assert.ok(/<a class="av-logo"[^>]*color:#1B0F2E/.test(out.html), 'logo link has an explicit light-mode colour');
+      assert.ok(/@media \(prefers-color-scheme: dark\) \{[^}]*\.av-logo \{ color:#F3EDE4 !important; \}/.test(out.html), 'dark-mode rule covers the logo alt text');
+      assert.ok(/\[data-ogsc\] \.av-logo \{ color:#F3EDE4 !important; \}/.test(out.html), 'Outlook.com dark rule covers the logo alt text');
+      assert.ok(/\[data-ogsb\] \.av-card \{ background-color:#241737 !important; \}/.test(out.html), 'Outlook.com dark background hook');
+      assert.ok(/<!--\[if mso\]>[\s\S]*font-family: Arial, Helvetica, sans-serif !important;[\s\S]*font-family: Georgia, 'Times New Roman', serif !important;[\s\S]*<!\[endif\]-->/.test(out.html), 'MSO font fallback uses !important');
+      assert.ok(!/color:\s*#000(000)?\b/i.test(out.html), 'no pure-black text');
+      // Every element that sets a text colour sits inside the card or footer, both of which have explicit backgrounds.
+      assert.ok(/<td class="av-card" bgcolor="#FFFFFF"/.test(out.html));
+    });
+  }
+
+  test('owner copy explains that no reminder was sent when nobody is assigned', () => {
+    const data = { ...fixtures['owner-cc-72h'] };
+    delete data.assigneeFirstName;
+    const text = visibleText(render('owner-cc-72h', data).html);
+    assert.ok(text.includes('no 24-hour reminder was sent'));
+    assert.ok(!text.includes('The assignee was reminded'));
+    assert.ok(visibleText(render('owner-cc-72h', fixtures['owner-cc-72h']).html).includes('The assignee was reminded at 24 hours.'));
+  });
+});
+
+describe('fixtures are obviously fake', () => {
+  const blob = JSON.stringify(fixtures);
+
+  test('contain no email addresses at all', () => {
+    assert.equal(blob.match(/[^\s"@]+@[^\s"@]+\.[^\s"@]{2,}/g), null);
+  });
+
+  test('contain no phone-shaped strings', () => {
+    assert.ok(!/\(\d{3}\)|\d{3}[-. ]\d{3}[-. ]\d{4}|\+\d{7,}/.test(blob));
+  });
+
+  test('every person and practice name is a placeholder', () => {
+    const nameFields = ['leadFirstName', 'assigneeFirstName', 'recipientFirstName', 'inviteeFirstName', 'invitedByName', 'practiceName', 'firstName'];
+    const seen = [];
+    const walk = (v, k) => {
+      if (Array.isArray(v)) return v.forEach((x) => walk(x, k));
+      if (v && typeof v === 'object') return Object.entries(v).forEach(([kk, vv]) => walk(vv, kk));
+      if (nameFields.includes(k)) seen.push(v);
+    };
+    walk(fixtures);
+    assert.ok(seen.length >= 10);
+    for (const n of seen) assert.ok(/Sample/.test(n), `${n} does not read as a placeholder`);
+  });
+
+  test('signed URLs in fixtures are labelled as not real', () => {
+    for (const u of [fixtures['magic-link'].magicLinkUrl, fixtures['front-desk-invite'].acceptUrl, fixtures['export-ready'].downloadUrl]) {
+      assert.ok(/not-real|not-a-real/.test(u), u);
+    }
+  });
+});

@@ -58,15 +58,20 @@ function headCss() {
     @media (prefers-color-scheme: dark) {
       body, .av-page { background-color:${BRAND.darkPage} !important; }
       .av-card { background-color:${BRAND.darkCard} !important; }
-      .av-text, .av-text a, .av-h1, .av-cell { color:${BRAND.darkText} !important; }
+      .av-text, .av-text a, .av-h1, .av-cell, .av-logo { color:${BRAND.darkText} !important; }
       .av-muted, .av-muted a { color:${BRAND.darkMuted} !important; }
+      .av-eyebrow { color:${BRAND.gold} !important; }
       .av-rule { border-color:${BRAND.darkRule} !important; }
       .av-btn { background-color:${BRAND.gold} !important; border-color:${BRAND.gold} !important; }
       .av-btn a { color:${BRAND.plum} !important; }
     }
-    [data-ogsc] .av-card { background-color:${BRAND.darkCard} !important; }
-    [data-ogsc] .av-text, [data-ogsc] .av-h1, [data-ogsc] .av-cell { color:${BRAND.darkText} !important; }
-    [data-ogsc] .av-muted { color:${BRAND.darkMuted} !important; }
+    [data-ogsb] body, [data-ogsb] .av-page { background-color:${BRAND.darkPage} !important; }
+    [data-ogsb] .av-card { background-color:${BRAND.darkCard} !important; }
+    [data-ogsb] .av-btn { background-color:${BRAND.gold} !important; border-color:${BRAND.gold} !important; }
+    [data-ogsc] .av-text, [data-ogsc] .av-text a, [data-ogsc] .av-h1, [data-ogsc] .av-cell, [data-ogsc] .av-logo { color:${BRAND.darkText} !important; }
+    [data-ogsc] .av-muted, [data-ogsc] .av-muted a { color:${BRAND.darkMuted} !important; }
+    [data-ogsc] .av-eyebrow { color:${BRAND.gold} !important; }
+    [data-ogsc] .av-btn a { color:${BRAND.plum} !important; }
   `.replace(/\n\s+/g, '\n');
 }
 
@@ -208,9 +213,9 @@ function renderBlockText(block) {
  */
 export function renderHtml(content, opts) {
   const logoSrc = opts.logoSrc || DEFAULT_LOGO_SRC;
-  const support = opts.supportAlias || SUPPORT_ALIAS;
+  const support = escapeHtml(opts.supportAlias || SUPPORT_ALIAS);
   const eyebrow = content.eyebrow
-    ? `<p class="av-muted" style="margin:0 0 12px 0;${mutedText}font-size:12px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:${BRAND.goldDark};">${escapeHtml(content.eyebrow)}</p>`
+    ? `<p class="av-eyebrow" style="margin:0 0 12px 0;${mutedText}font-size:12px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:${BRAND.goldDark};">${escapeHtml(content.eyebrow)}</p>`
     : '';
 
   return `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -224,7 +229,7 @@ export function renderHtml(content, opts) {
 <title>${escapeHtml(content.subject)}</title>
 <!--[if mso]>
 <xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml>
-<style>table, td, p, a { font-family: Georgia, Arial, sans-serif; }</style>
+<style>table, td, p, a { font-family: Arial, Helvetica, sans-serif !important; } h1 { font-family: Georgia, 'Times New Roman', serif !important; }</style>
 <![endif]-->
 <!--[if !mso]><!-->
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Inter:wght@400;600&display=swap" rel="stylesheet" type="text/css">
@@ -240,8 +245,8 @@ ${preheaderHtml(content.preheader)}
       <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="${WIDTH}" class="av-container" style="width:${WIDTH}px;max-width:${WIDTH}px;">
         <tr>
           <td align="left" style="padding:0 0 20px 4px;">
-            <a href="https://getaftervue.com" target="_blank" style="text-decoration:none;">
-              <img src="${escapeHtml(logoSrc)}" width="132" height="32" alt="AfterVue" style="display:block;width:132px;height:32px;">
+            <a class="av-logo" href="https://getaftervue.com" target="_blank" style="text-decoration:none;font-family:${FONT_HEADING};font-size:22px;font-weight:600;color:${BRAND.plum};">
+              <img src="${escapeHtml(logoSrc)}" width="132" height="32" alt="AfterVue" style="display:block;width:132px;height:32px;font-family:${FONT_HEADING};font-size:22px;font-weight:600;color:${BRAND.plum};">
             </a>
           </td>
         </tr>

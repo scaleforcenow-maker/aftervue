@@ -14,6 +14,7 @@ import { mkdir, writeFile, copyFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { render, listTemplates } from '../src/index.js';
+import { DEFAULT_LOGO_SRC } from '../src/layout.js';
 import { fixtures } from '../fixtures/index.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -33,8 +34,11 @@ await copyFile(path.join(root, 'assets', 'aftervue-mark.svg'), path.join(dest, '
 
 const cards = [];
 for (const { name, description, guardPii } of listTemplates()) {
-  const out = render(name, fixtures[name], { utm, logoSrc: 'assets/aftervue-mark.svg' });
-  await writeFile(path.join(dest, `${name}.html`), out.html, 'utf8');
+  const out = render(name, fixtures[name], { utm });
+  // render() only accepts cid: or https: for the mark. For the browser preview,
+  // resolve the CID to the placeholder asset the way a mail client would.
+  const html = out.html.replace(`src="${DEFAULT_LOGO_SRC}"`, 'src="assets/aftervue-mark.svg"');
+  await writeFile(path.join(dest, `${name}.html`), html, 'utf8');
   await writeFile(path.join(dest, `${name}.txt`), out.text, 'utf8');
   cards.push({ name, description, guardPii, subject: out.subject, preheader: out.preheader, text: out.text });
   console.log(`rendered ${name} (${out.subject.length}-char subject)`);
