@@ -273,10 +273,35 @@ Each runs on its own branch and opens a draft PR against `claude/task-review-cre
 | Cloud Run + Vertex infra | `claude/infra-cloud-run` | `infra/terraform`, preview-api skeleton, Cloud Build, migration doc |
 | Lead-management emails | `claude/lead-emails` | `packages/lead-emails/` eight Postmark templates with previews and tests |
 
-Recurring: a Routine named "AfterVue weekly SEO article (cloud session)" fires every
-Monday at 7:47 AM ET and writes one new article as a draft PR. Disable it at
-claude.ai -> Routines if the cadence should change.
+Second wave (same day): capacity research (`claude/research-capacity`), four more
+articles (`claude/seo-cluster-c-accuracy`, `-e-compare`, `-i-consent`, `-f-measure`),
+an article build kit (`claude/seo-build-kit`: static pages, sitemap merge, validation,
+CI artifact; it never deploys), a LinkedIn post pack for every existing and new article
+(`claude/linkedin-article-pack`), and one editorial review-and-fix session per article
+PR (#1, #2, #3, #4, #7, #8, #9, #11) applying `_seo/EDITORIAL_STANDARD.md` and setting
+`status: reviewed`.
 
-Still waiting on the code push for: secrets audit of the real history, the CI run
-against the real test suites, wiring the resilience module into `/api/generate`, the
-Cloud Run deploys, Turnstile and Sentry in the live functions, per-tenant tokens.
+Recurring Routines (claude.ai -> Routines):
+- "AfterVue weekly SEO article (cloud session)", Mondays 7:47 AM ET: one new reviewed
+  article as a draft PR.
+- "AfterVue weekly LinkedIn post rows for new articles", Mondays 9:17 AM ET: a post row,
+  card and scheduling brief for every article without one, on the Tue/Thu 8:30 AM ET
+  plus alternating Monday cadence. Scheduling itself happens from the Mac through
+  LinkedIn's native scheduler, per the aftervue-linkedin-manager skill.
+
+## 8. The real codebase and the one-click unlock
+
+The site, iOS app and tooling live in **`AfterVue/aftervue-ai`** (branch
+`domain-getaftervue`), not in this planning repo. Cloud sessions cannot clone it: the
+Claude GitHub App is not installed on that repository (checked Oct 9, access denied).
+Fix: GitHub -> AfterVue org -> Settings -> GitHub Apps -> Claude -> Repository access ->
+add `aftervue-ai`. Once that is done, sessions can convert the article drafts into the
+real `_seo/drafts/` format, run `tools/seo/build_articles.py`, render LinkedIn cards
+with `tools/social/av_cards.py`, and open PRs against `domain-getaftervue`; the Mac
+session then deploys as usual. Until then the drafts, standard, build kit and LinkedIn
+pack are complete here and are copied over by hand or by the Mac session.
+
+Also waiting on that access (or a push of the code here): secrets audit of the real
+history, CI against the real test suites, wiring the resilience module into
+`/api/generate`, the Cloud Run deploys, Turnstile and Sentry in the live functions,
+per-tenant tokens.
