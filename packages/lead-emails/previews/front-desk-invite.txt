@@ -1,0 +1,23 @@
+AfterVue
+
+INVITATION
+Join Sample Medspa on AfterVue
+==============================
+
+B. Sample, A. Owner Sample has invited you to join Sample Medspa as a front-desk member. You will be able to see new leads, reply to them and mark them as contacted or booked.
+
+Accept the invitation:
+https://app.getaftervue.com/invite/accept?token=sample-invite-not-real
+
+If the button does not work, copy this link into your browser:
+https://app.getaftervue.com/invite/accept?token=sample-invite-not-real
+
+This invitation expires in 7 days. After that, ask A. Owner Sample to send a new one.
+
+Lead details are protected health information. Only open the inbox on a device the practice controls.
+
+--
+You received this because A. Owner Sample invited you to the Sample Medspa team on AfterVue.
+Manage notifications: https://app.getaftervue.com/settings/notifications
+Questions: support@getaftervue.com
+This message was sent by AfterVue. It contains no patient details.
