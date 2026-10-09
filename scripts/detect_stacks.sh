@@ -27,9 +27,12 @@ if [ -d tools ] && find tools \( "${PRUNE[@]}" \) -prune -o -name '*.py' -type f
   has_python=true
 fi
 
+# scripts/tests/ holds the brand-check unittests, which CI runs separately.
+# -quit stops at the first hit; piping find into grep -v | grep -q raced with
+# SIGPIPE under pipefail and reported false on large trees.
 has_pytest=false
-if find . \( "${PRUNE[@]}" \) -prune -o -type f \( -name 'test_*.py' -o -name '*_test.py' -o -name conftest.py \) -print \
-   | grep -v '^./scripts/tests/' | grep -q .; then
+if find . \( "${PRUNE[@]}" -o -path './scripts/tests' \) -prune -o \
+     -type f \( -name 'test_*.py' -o -name '*_test.py' -o -name conftest.py \) -print -quit | grep -q .; then
   has_pytest=true
 fi
 
