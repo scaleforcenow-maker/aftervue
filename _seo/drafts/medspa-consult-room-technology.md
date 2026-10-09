@@ -33,7 +33,7 @@ status: "draft"
 
 # Designing the Medspa Consult Room: Technology That Helps the Conversation
 
-Most searches for virtual consultation software for medspa practices start with a feature list. The better starting point is the room itself. A consult is a conversation between a patient and an injector, and every screen in that room either supports the conversation or competes with it. This guide walks the workflow from arrival to booking, names the tools that belong in it, and covers the setup details that keep patient photos where they should be.
+Most searches for virtual consultation software for medspa practices start with a feature list. The better starting point is the room itself. A consult is a conversation between a patient and an injector, and every screen in that room either supports the conversation or competes with it. This guide walks the workflow from arrival to booking and names the tools that belong in it.
 
 ## The consult-room workflow, start to finish
 
