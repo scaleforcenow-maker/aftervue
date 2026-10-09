@@ -49,7 +49,7 @@ RULE_IDS = ("exclamation", "dollar-near-brand", "botox", "phone-number")
 
 # --- patterns ---------------------------------------------------------------
 
-FENCED_CODE_RE = re.compile(r"^(```|~~~).*?^\1[ \t]*$", re.MULTILINE | re.DOTALL)
+FENCED_CODE_RE = re.compile(r"^[ \t]*(```|~~~).*?^[ \t]*\1[ \t]*$", re.MULTILINE | re.DOTALL)
 INLINE_CODE_RE = re.compile(r"`[^`\n]*`")
 HTML_COMMENT_RE = re.compile(r"<!--.*?-->", re.DOTALL)
 FRONT_MATTER_RE = re.compile(r"\A---[ \t]*\n.*?\n---[ \t]*\n", re.DOTALL)
@@ -150,8 +150,8 @@ def body_text(markdown: str) -> str:
     """Markdown with non-prose regions blanked out, same length as the input."""
     text = _blank_out(markdown, FRONT_MATTER_RE)
     text = _blank_out(text, FENCED_CODE_RE)
+    text = _blank_out(text, INLINE_CODE_RE)   # before comments: `<!--` in code must not open one
     text = _blank_out(text, HTML_COMMENT_RE)
-    text = _blank_out(text, INLINE_CODE_RE)
     text = _blank_out(text, URL_RE)
     text = _blank_out(text, IMAGE_BANG_RE)
     return text

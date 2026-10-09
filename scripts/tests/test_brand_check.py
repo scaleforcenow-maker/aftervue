@@ -42,6 +42,14 @@ class ExclamationRule(unittest.TestCase):
     def test_ignores_inline_code(self):
         self.assertEqual(bc.check_text("Use `!important` sparingly.\n", DRAFT), [])
 
+    def test_ignores_indented_fence_in_list(self):
+        md = "- Step one:\n\n    ```sh\n    echo done!\n    ```\n\n- Step two.\n"
+        self.assertEqual(bc.check_text(md, DRAFT), [])
+
+    def test_inline_code_does_not_open_html_comment(self):
+        md = "Type `<!--` to start a comment. Then prose! here -->\n"
+        self.assertEqual(rules_of(bc.check_text(md, DRAFT)), ["exclamation"])
+
     def test_ignores_front_matter(self):
         md = "---\ntitle: Wow!\n---\n\nCalm body.\n"
         self.assertEqual(bc.check_text(md, DRAFT), [])
