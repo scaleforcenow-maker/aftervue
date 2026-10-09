@@ -1,0 +1,140 @@
+# Gitleaks configuration for the AfterVue repository.
+# Runs via scripts/secret_scan.sh (locally and in CI) across the full git history.
+#
+# The repository is public and the business is HIPAA-adjacent, so this config
+# extends the gitleaks default rule set with the credential types AfterVue
+# actually uses: Google API keys (Gemini/Vertex/Maps), Stripe live and restricted
+# keys, Postmark server tokens, Web3Forms access keys, Vercel tokens, and Apple
+# App Store Connect .p8 private keys.
+#
+# Reference: https://github.com/gitleaks/gitleaks#configuration
+
+title = "AfterVue gitleaks config"
+
+[extend]
+useDefault = true
+
+# ---------------------------------------------------------------------------
+# Custom rules
+# ---------------------------------------------------------------------------
+
+[[rules]]
+id = "aftervue-google-api-key"
+description = "Google API key (Gemini, Vertex AI, Maps, Firebase). Starts with AIza."
+regex = '''AIza[0-9A-Za-z\-_]{35}'''
+keywords = ["AIza"]
+
+[[rules]]
+id = "aftervue-stripe-live-secret-key"
+description = "Stripe live secret key (sk_live_). Full account access; rotate immediately if found."
+regex = '''\bsk_live_[0-9a-zA-Z]{20,99}\b'''
+keywords = ["sk_live_"]
+
+[[rules]]
+id = "aftervue-stripe-live-restricted-key"
+description = "Stripe live restricted key (rk_live_). Used by tools/stripe and network secrets."
+regex = '''\brk_live_[0-9a-zA-Z]{20,99}\b'''
+keywords = ["rk_live_"]
+
+[[rules]]
+id = "aftervue-stripe-test-secret-key"
+description = "Stripe test-mode secret or restricted key (sk_test_, rk_test_). Lower risk but still never committed."
+regex = '''\b[sr]k_test_[0-9a-zA-Z]{20,99}\b'''
+keywords = ["sk_test_", "rk_test_"]
+
+[[rules]]
+id = "aftervue-stripe-webhook-secret"
+description = "Stripe webhook signing secret (whsec_)."
+regex = '''\bwhsec_[0-9a-zA-Z]{20,99}\b'''
+keywords = ["whsec_"]
+
+[[rules]]
+id = "aftervue-postmark-server-token"
+description = "Postmark server or account token (UUID) next to a Postmark identifier."
+regex = '''(?i)(?:postmark[a-z0-9_\-]*(?:token|key)?|x-postmark-(?:server|account)-token)[^\n]{0,40}?\b([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\b'''
+secretGroup = 1
+keywords = ["postmark"]
+
+[[rules]]
+id = "aftervue-web3forms-access-key"
+description = "Web3Forms access key (UUID) next to a Web3Forms, access_key, or leadKey identifier."
+regex = '''(?i)(?:web3forms[a-z0-9_\-]*|access_key|accesskey|leadkey|lead_key)[^\n]{0,40}?\b([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\b'''
+secretGroup = 1
+keywords = ["web3forms", "access_key", "accesskey", "leadkey", "lead_key"]
+
+[[rules]]
+id = "aftervue-vercel-token"
+description = "Vercel API token (24 alphanumerics) next to a Vercel token identifier."
+regex = '''(?i)(?:vercel[a-z0-9_\-]*(?:token|secret|api[_\-]?key))[^\n]{0,20}?['"]?\b([a-zA-Z0-9]{24})\b['"]?'''
+secretGroup = 1
+keywords = ["vercel"]
+
+[[rules]]
+id = "aftervue-apple-p8-private-key"
+description = "Apple App Store Connect / APNs .p8 private key material (PKCS#8 block)."
+regex = '''-----BEGIN PRIVATE KEY-----[\s\S]{0,1000}?-----END PRIVATE KEY-----'''
+keywords = ["-----BEGIN PRIVATE KEY-----"]
+
+[[rules]]
+id = "aftervue-apple-p8-filename"
+description = "An App Store Connect key file (AuthKey_<KEYID>.p8) committed by path."
+path = '''(?i)AuthKey_[A-Z0-9]{10}\.p8$'''
+
+[[rules]]
+id = "aftervue-service-account-json"
+description = "Google Cloud service-account JSON committed by content."
+regex = '''"type"\s*:\s*"service_account"'''
+keywords = ["service_account"]
+
+[[rules]]
+id = "aftervue-cloudflare-api-token"
+description = "Cloudflare API token (Turnstile secret or zone token) next to a Cloudflare identifier."
+regex = '''(?i)(?:cloudflare|turnstile)[a-z0-9_\-]*(?:token|secret|key)[^\n]{0,20}?['"]?\b([a-zA-Z0-9_\-]{40})\b['"]?'''
+secretGroup = 1
+keywords = ["cloudflare", "turnstile"]
+
+# ---------------------------------------------------------------------------
+# Allowlist: sample and fixture files, placeholder values, and this config.
+# ---------------------------------------------------------------------------
+
+[allowlist]
+description = "Sample files, fixtures, docs placeholders, and the scanner's own config."
+
+# Files that exist to show the SHAPE of a secret, never a real one.
+paths = [
+  '''\.gitleaks\.toml$''',
+  '''(^|/)\.env\.example$''',
+  '''(^|/)\.env\.sample$''',
+  '''(^|/)\.env\.template$''',
+  '''\.sample\.(json|js|ts|toml|yml|yaml|env)$''',
+  '''\.example\.(json|js|ts|toml|yml|yaml|env)$''',
+  '''(^|/)config\.example\.js$''',
+  '''(^|/)config\.sample\.js$''',
+  '''(^|/)tools/stripe/catalog\.sample\.json$''',
+  '''(^|/)tests?/fixtures/''',
+  '''(^|/)__fixtures__/''',
+  '''(^|/)scripts/tests/''',
+  '''(^|/)package-lock\.json$''',
+  '''(^|/)pnpm-lock\.yaml$''',
+  '''(^|/)yarn\.lock$''',
+  '''(^|/)Package\.resolved$''',
+]
+
+# Lines whose "secret" is obviously a placeholder.
+regexTarget = "line"
+regexes = [
+  '''(?i)(replace[_\-]?me|your[_\-]?(key|token|secret)[_\-]?here|changeme|change[_\-]me|placeholder|example[_\-]?key|dummy|xxxxxxxx|0000-0000-0000)''',
+  '''(?i)\$\{?[A-Z0-9_]+\}?\s*$''',
+  '''(?i)process\.env\.[A-Z0-9_]+''',
+  '''(?i)os\.environ(\.get)?\[?\(?['"][A-Z0-9_]+['"]''',
+  '''00000000-0000-0000-0000-000000000000''',
+  '''AIza[Xx]{35}''',
+  '''(?i)(sk|rk)_(live|test)_[x\.]{20,}''',
+]
+
+stopwords = [
+  "example",
+  "sample",
+  "placeholder",
+  "REDACTED",
+]
