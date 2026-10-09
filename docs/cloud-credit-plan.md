@@ -305,3 +305,23 @@ Also waiting on that access (or a push of the code here): secrets audit of the r
 history, CI against the real test suites, wiring the resilience module into
 `/api/generate`, the Cloud Run deploys, Turnstile and Sentry in the live functions,
 per-tenant tokens.
+
+## 9. iOS app and ops errors found in mail (Oct 9) and the fix tasks
+
+Source: the connected mailbox mikel@getaftervue.com. The Apple ID mailbox
+scaleforcenow@gmail.com is not connected to cloud sessions, so App Store Connect,
+TestFlight and Xcode mail could not be reviewed yet (issue #21 explains how to unlock
+it: connect it as a Gmail connector, forward apple.com mail to mikel@getaftervue.com,
+or run the review from a local Cowork session).
+
+| Issue | What is wrong | Severity |
+| --- | --- | --- |
+| [#16](https://github.com/scaleforcenow-maker/aftervue/issues/16) | Previews degraded: 429 quota on `gemini-2.5-flash-image` during the Oct 9 TestFlight session; a render path is still on the Gemini Developer API instead of Vertex | P0 |
+| [#17](https://github.com/scaleforcenow-maker/aftervue/issues/17) | Every ops alert to mikelmcnamara@icloud.com bounces (iCloud 554 5.7.1 HM08); no alert has been delivered for two weeks | P0 |
+| [#18](https://github.com/scaleforcenow-maker/aftervue/issues/18) | Activation PIN redeemed from two IPs; no device binding or PIN rotation | P1 |
+| [#19](https://github.com/scaleforcenow-maker/aftervue/issues/19) | Supabase stops auto-granting Data API access to new tables on Oct 30 | P1 |
+| [#20](https://github.com/scaleforcenow-maker/aftervue/issues/20) | Notify mailer Apps Script scope failures (Sept 18); verify and add a smoke test | P2 |
+| [#21](https://github.com/scaleforcenow-maker/aftervue/issues/21) | Review scaleforcenow@gmail.com for Apple errors once reachable | P1 |
+
+The check-in routine launches one fix session per issue in `AfterVue/aftervue-ai` as
+soon as that repository is reachable, and re-checks the mailbox for recurrences.
