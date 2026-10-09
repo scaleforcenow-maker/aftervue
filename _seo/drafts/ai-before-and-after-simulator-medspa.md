@@ -17,58 +17,56 @@ sources:
   - https://www.crisalix.com/en/about-us
   - https://www.touchmd.com/news/nextech-acquires-touchmd
   - https://rxphoto.com/platform/clinical-photography
-status: draft
+status: reviewed
 ---
 
-An AI before-and-after simulator is now a common line item when a medspa plans its website or consult room. The category is young, the vendors describe themselves in similar words, and the differences that matter are easy to miss on a feature grid. This guide covers what to look for and the questions that sort vendors quickly.
+An AI before-and-after simulator generates an illustrative preview of a treatment on a prospective patient's own photo, for your website or the consult iPad. The one worth buying does six things: it works on the patient's own face, labels every preview as an AI illustration, computes no beauty score, keeps no copy of the photo, embeds under your branding, and ends on your own booking page. This guide gives you the six checks, the vendor-call script that tests each one with the answers that should end the call, and the one distinction that stops a practice buying a simulator when it needed a photo system, or the reverse.
 
-## What an AI before-and-after simulator is, and who buys one
+## Simulator or documentation system: decide this first
 
-An AI before-and-after simulator takes a photo of a prospective patient and generates an illustrative preview of how a treatment might look on that person's own face. The category grew out of the morphing tools surgeons used in consults and the consumer filter apps that let anyone try a new lip shape in a selfie. The current generation uses photoreal image models, so the preview looks like a photograph of the patient rather than a sketch or a 3D mesh.
+"AI before and after" covers two different products, and most vendors sell only one.
 
-The buyers are practice owners and injectors who want a consult aid, a website feature, or both. A good preview gives a hesitant first-time patient something concrete to react to, and it gives the injector a shared reference point for the conversation about what is realistic. It is a conversation tool, never a guarantee of a clinical result, and a vendor who says otherwise is telling you something about the product.
+A simulator predicts. It takes a photo before any treatment and generates an illustrative preview of a possible result. [Perfect Corp's Skincare Pro aesthetic simulator](https://www.perfectcorp.com/business/solutions/online-service/aesthetic-simulation) and [EntityMed](https://entitymed.com/) work this way, [Crisalix](https://www.crisalix.com/en/about-us) does the same with a surgical-leaning 3D model, and AfterVue is in this group.
 
-## Prediction or documentation: the two jobs people confuse
+A documentation system records. It captures standardized clinical photos after real treatment, stores them under consent, and presents them in a consult. [TouchMD, part of Nextech since 2022](https://www.touchmd.com/news/nextech-acquires-touchmd), and [RxPhoto](https://rxphoto.com/platform/clinical-photography) are built for that job. Neither generates a preview of what might happen.
 
-"AI before and after" means two different things, and most vendors sit in one camp.
+If your pain is patients who cannot picture a result, you need a simulator. If your pain is inconsistent clinical photos and consent paperwork, you need a documentation system. Many practices end up with both.
 
-The first job is prediction: generating an illustrative preview from a patient's own photo before any treatment happens. [Perfect Corp's Skincare Pro aesthetic simulator](https://www.perfectcorp.com/business/solutions/online-service/aesthetic-simulation) and [EntityMed](https://entitymed.com/) work this way, and [Crisalix](https://www.crisalix.com/en/about-us) takes a surgical-leaning 3D approach to the same idea. AfterVue is in this group.
+## What to look for in an AI before-and-after simulator
 
-The second job is documentation: capturing standardized clinical photos after real treatment, storing them under consent, and presenting them in a consult. [TouchMD, part of Nextech since 2022](https://www.touchmd.com/news/nextech-acquires-touchmd), and [RxPhoto](https://rxphoto.com/platform/clinical-photography) are documentation and consult-presentation tools. They record what happened. They do not generate a preview of what might happen.
+Six criteria separate a tool you can put in front of patients from one you cannot.
 
-Many practices need both. The mistake is buying one and expecting the other: a documentation system will not help a patient picture a possible result, and a simulator is not a clinical record.
+**The patient's own face, not a model.** Stock faces and generic morphs are easy to dismiss. A preview earns attention only when it is clearly the person looking at it. Ask to see the tool run on a staff member's photo during the demo, not on the vendor's samples.
 
-## What to look for in an aesthetic AI preview tool
+**Labeled as illustrative.** Every preview should carry a visible note that it is an AI illustration, not a predicted or promised outcome. The label protects the patient from unrealistic expectations and protects the practice from an implied clinical promise.
 
-These criteria separate a tool you can put in front of patients from one you cannot.
+**No beauty scores or ratings.** Some apps score faces for "attractiveness" or flag supposed flaws. A Northumbria University psychologist writing in [The Conversation](https://theconversation.com/youre-a-4-out-of-10-the-troubling-rise-of-ai-appearance-ratings-287333) describes how such scores carry an illusion of objectivity, reflect the biases of their training data, and have been linked to harmful online subcultures, while noting that direct evidence of their effects is still limited. The [Korea Times](https://www.koreatimes.co.kr/southkorea/20260819/ai-beauty-ratings-raise-concerns-for-young-people) raises the same concern for young people. A consult tool has no business rating anyone.
 
-**The patient's own face, not a model.** Stock faces and generic morphs are easy to dismiss. A preview only earns a patient's attention when it is clearly them. Ask to see it run on a staff member's photo, not the vendor's demo images.
-
-**Labeled as illustrative.** Every preview should carry a visible note that it is an AI illustration, not a predicted or promised outcome. That protects the patient from unrealistic expectations and protects the practice from an implied clinical promise.
-
-**No beauty scores or ratings.** Some apps score faces for "attractiveness" or flag supposed flaws. A Northumbria University psychologist writing in [The Conversation](https://theconversation.com/youre-a-4-out-of-10-the-troubling-rise-of-ai-appearance-ratings-287333) describes how such scores carry an illusion of objectivity, reflect the biases of their training data, and have been linked to harmful online subcultures, while noting that direct evidence of their effects is still limited. Coverage in the [Korea Times](https://www.koreatimes.co.kr/southkorea/20260819/ai-beauty-ratings-raise-concerns-for-young-people) raises the same concerns for young people. A consult tool has no business rating anyone. Choose a product that shows a possible change and stops there.
-
-**Photos not stored.** Patient photos used in treatment are protected health information. [AmSpa's guidance on managing patient photos](https://www.americanmedspa.org/news/5-tips-for-managing-patient-photos-to-keep-your-medical-spa-hipaa-compliant/) warns against leaving images on devices and against sending them over unencrypted channels. A simulator that keeps a copy of every upload becomes one more system you have to secure, audit, and cover under a business associate agreement. Prefer a tool that processes the photo for the preview and then discards it.
+**Photos not stored.** Patient photos used in treatment are protected health information. [AmSpa's guidance on managing patient photos](https://www.americanmedspa.org/news/5-tips-for-managing-patient-photos-to-keep-your-medical-spa-hipaa-compliant/) warns against leaving images on devices and against sending them over unencrypted channels. A simulator that keeps every upload becomes one more system to secure, audit, and cover under a business associate agreement. Prefer a tool that processes the photo for the preview and then discards it. This is general information, not legal advice.
 
 **Embedded on your own site and consult iPad.** A link to a vendor's domain breaks the experience and hands your traffic to someone else. Look for a widget you can place on your own website and a view that works on the iPad in the consult room, under your branding.
 
-**Hands off to your own booking page.** The preview should end with your call to action, not the vendor's. The tool should not sit between you and the patient. When the patient is ready, it should send them to the booking page you already run.
+**Hands off to your own booking page.** The preview should end with your call to action, not the vendor's. When the patient is ready, the tool should send them to the booking page you already run, not sit between you and the patient.
 
-## Questions to ask a simulator vendor
+## The vendor-call script for an aesthetic AI preview tool
 
-- Does the preview use the patient's own photo, or a model?
-- Where does the photo go after the preview is generated, and for how long?
-- Is every preview labeled as an illustration, and can we see the label?
-- Does the product compute any score, rating, or "improvement" number?
-- Can it be embedded on our site and used on our consult iPad, or is it a link to your site?
-- Where does the patient go when they tap the final button?
-- Which treatments does it cover today, and how are new ones added?
-- What does it do when the image model is busy or unavailable?
+Ask these eight questions on the demo call, in this order. The third column is the answer that ends the call.
+
+| Question | Good answer | Walk away when |
+| --- | --- | --- |
+| Does the preview use the patient's own photo? | Yes, every time. Watch it run on a staff photo. | Previews use model faces or templates. |
+| Where does the photo go after the preview, and for how long? | Processed for the preview, then discarded. | Stored indefinitely, or the vendor is unsure. |
+| Is every preview labeled as an illustration? | Yes. The label is visible on screen. | The label is optional, hidden, or absent. |
+| Does the product compute any score or "improvement" number? | No. | Any rating, ranking, or flaw detection. |
+| Is it embedded on our site and iPad, or a link to yours? | Widget on your domain, your branding. | Patients leave for the vendor's site. |
+| Where does the patient go when they tap the final button? | Your booking page. | The vendor's form or lead inbox. |
+| Which treatments are covered, and how are new ones added? | A named list and a release cadence. | "Anything," with no list. |
+| What happens when the image model is busy? | A clear waiting state and a retry. | A canned sample image. |
 
 A vendor who hesitates on the storage question or cannot show the illustrative label has told you where the product sits.
 
 ## Where AfterVue fits
 
-[AfterVue](/) is a photoreal AI preview app for medspas and injectors. It generates an illustrative preview from the patient's own photo, labels it as an AI illustration rather than a predicted result, and computes no beauty scores or ratings. Photos are processed for the preview and are not stored by AfterVue. The widget embeds on the practice's own website and runs on the consult iPad, and when the patient is ready it hands off to the practice's own booking page rather than booking the consult itself. It is built for the prediction job described above and does not replace a documentation system. If that matches your shopping list, a live demo on a real face is the quickest way to judge preview quality, and the [preview app](/app/) shows the patient-facing flow.
+[AfterVue](/) is a photoreal AI preview app for medspas and injectors. It generates an illustrative preview from the patient's own photo, labels it as an AI illustration rather than a predicted result, and computes no beauty scores or ratings. Photos are processed for the preview and are not stored by AfterVue. The widget embeds on the practice's own website and runs on the consult iPad, and when the patient is ready it hands off to the practice's own booking page rather than booking the consult itself. It is a simulator, not a documentation system. The quickest way to judge preview quality is a live demo on a real face, and the [preview app](/app/) shows the patient-facing flow.
 
 [Book a live demo](/#demo)
