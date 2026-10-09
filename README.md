@@ -9,3 +9,7 @@ ops/SEO/BD tooling. The working copy still lives on the founder's Mac; see
   with ready-to-paste session prompts.
 - `.claude/settings.json` and `scripts/cloud_session_setup.sh`: dependency install
   that runs only in Claude Code cloud sessions.
+- `packages/lead-emails/`: transactional email templates for the lead-management
+  service (new lead, reminders, weekly digest, sign-in, invitation, retention,
+  export) with a Postmark adapter, tests and browser previews under
+  `packages/lead-emails/previews/`.

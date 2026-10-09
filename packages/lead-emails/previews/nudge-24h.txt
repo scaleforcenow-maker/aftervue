@@ -1,0 +1,25 @@
+AfterVue
+
+REMINDER
+A. Sample is still waiting
+==========================
+
+B. Sample, this lead is assigned to you and is still marked new after 24 hours.
+
+First name: A. Sample
+Received:   Wed, Oct 7, 2:05 PM
+Waiting:    24 hours
+
+Open the lead:
+https://app.getaftervue.com/inbox/leads/ld_sample_0001
+
+If the button does not work, copy this link into your browser:
+https://app.getaftervue.com/inbox/leads/ld_sample_0001
+
+Marking the lead as contacted in the inbox stops these reminders. If the lead has already been reached another way, update the status so the record is accurate.
+
+--
+You received this because this lead at Sample Medspa is assigned to you in AfterVue.
+Manage notifications: https://app.getaftervue.com/settings/notifications
+Questions: support@getaftervue.com
+This message was sent by AfterVue. It contains no patient details.

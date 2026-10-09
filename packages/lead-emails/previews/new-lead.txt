@@ -1,0 +1,26 @@
+AfterVue
+
+NEW LEAD
+A. Sample would like to hear from Sample Medspa
+===============================================
+
+A new lead has been added to your AfterVue inbox. Contact details and notes are in the inbox, not in this email.
+
+First name:  A. Sample
+Source:      Website preview widget
+Received:    Thu, Oct 8, 2:05 PM
+Assigned to: B. Sample
+
+Open the inbox:
+https://app.getaftervue.com/inbox/leads/ld_sample_0001
+
+If the button does not work, copy this link into your browser:
+https://app.getaftervue.com/inbox/leads/ld_sample_0001
+
+The inbox records the time of your first reply, which feeds the weekly summary.
+
+--
+You received this because new-lead alerts are on for Sample Medspa in AfterVue.
+Manage notifications: https://app.getaftervue.com/settings/notifications
+Questions: support@getaftervue.com
+This message was sent by AfterVue. It contains no patient details.

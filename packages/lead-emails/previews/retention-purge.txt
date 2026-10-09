@@ -1,0 +1,26 @@
+AfterVue
+
+RETENTION
+23 leads removed under your retention policy
+============================================
+
+AfterVue keeps lead records for Sample Medspa for 90 days. Records older than that were permanently deleted, including names, contact details, notes and any attached photos.
+
+Records removed:  23
+Received before:  Jul 10, 2026
+Run at:           Oct 8, 2026
+Retention window: 90 days
+
+Deleted records cannot be restored. If you need a longer window, change it in settings before the next run. Exports are available to practices with a signed BAA.
+
+Review retention settings:
+https://app.getaftervue.com/settings/retention
+
+If the button does not work, copy this link into your browser:
+https://app.getaftervue.com/settings/retention
+
+--
+You received this because you are the owner of Sample Medspa and its retention window is 90 days.
+Manage notifications: https://app.getaftervue.com/settings/notifications
+Questions: support@getaftervue.com
+This message was sent by AfterVue. It contains no patient details.
