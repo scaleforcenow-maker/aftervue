@@ -14,6 +14,8 @@ def main(path):
     if not m:
         print("FAIL: no YAML front matter"); return 1
     fm, body = m.group(1), m.group(2)
+    # HTML comments are build-time notes, not content: ignore them.
+    body = re.sub(r"<!--.*?-->", "", body, flags=re.S)
     ok = True
     for key in REQUIRED:
         if not re.search(rf"^{key}:", fm, re.M):
