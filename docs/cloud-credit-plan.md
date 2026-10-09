@@ -56,18 +56,16 @@ Do this before anything else, in this order:
    SessionStart hook that runs `npm install` / `pip install` only inside cloud
    sessions. Merge it so every session starts with dependencies in place.
 
-## 3. Money problems that make some sessions pointless until fixed
+## 3. Billing status (checked Oct 9)
 
-These are not cloud-session tasks, but they decide the order below.
-
-| Email | Date | Effect |
+| Email | Date | Status |
 | --- | --- | --- |
-| Google Cloud: billing account `01537A-F66626-2687E3` suspended | Oct 1 | Vertex AI (the preview API) and the planned Cloud Run deploys stop working. Google terminates the billing account and its projects 30 days after the notice, so about **Oct 31**. Fix at console.cloud.google.com/billing/01537A-F66626-2687E3/settings. |
-| Google Workspace payment failure, suspension threatened Oct 6 | Oct 1 | Mail still flowed on Oct 7 so it may be resolved. Confirm in admin.google.com -> Billing. |
-| Gemini prepay credits depleted, app serving the demo sample | Sept 9 | Superseded by the Vertex move, but the suspension above puts the preview back in the same state. |
+| Google Cloud: billing account suspended for failed payment | Oct 1 | **Resolved.** Google confirmed the account "is in good standing at this time" on Oct 3. Vertex AI and Cloud Run deploys are unblocked. |
+| Google Workspace payment declined, suspension threatened Oct 6 | Oct 1 | **Resolved.** Payment received Oct 2; next invoice due Oct 30. |
+| Gemini prepay credits depleted, app served the demo sample | Sept 9 | Superseded by the move to Vertex AI (postpay) on Sept 16. |
 
-Fix the Google Cloud payment first. Sessions 1 through 4 below work without it; 5
-and 6 need it.
+Nothing in billing blocks the sessions below any more. The remaining gate is the code
+push in section 2.
 
 ## 4. Session plan, in priority order
 
@@ -255,3 +253,75 @@ Start each at claude.ai/code with repository `scaleforcenow-maker/aftervue`.
   Google Cloud free trial Sept 12
 - Claude Code docs: cloud sessions, cloud environments (network secrets,
   SessionStart hooks, Auto-fix)
+
+## 7. What was launched on Oct 9 (status log)
+
+The codebase had not been pushed yet, so the sessions below were chosen because they
+can be done from the company's documents alone and drop into the main codebase later.
+Each runs on its own branch and opens a draft PR against `claude/task-review-credit-usage-5s4irr`.
+
+| Session | Branch | Output |
+| --- | --- | --- |
+| SEO article, Cluster A | `claude/seo-cluster-a` | `_seo/drafts/ai-before-and-after-simulator-medspa.md` |
+| SEO article, Cluster D | `claude/seo-cluster-d` | `_seo/drafts/medspa-marketing-software.md` |
+| SEO article, Cluster G | `claude/seo-cluster-g` | `_seo/drafts/medspa-consult-room-technology.md` |
+| SEO article, Cluster J | `claude/seo-cluster-j` | `_seo/drafts/medspa-website-design.md` |
+| Stripe catalog provisioning | `claude/stripe-catalog` | `tools/stripe/` idempotent script, tests, sample catalog (real amounts stay out of the public repo) |
+| Vertex resilience module | `claude/vertex-resilience` | `packages/vertex-resilience/` queue, limiter, backoff, fallback, counters, tests |
+| App Store localized metadata | `claude/appstore-localized-metadata` | `ops/41_App_Store_Localized_Metadata.md`, `ops/41_metadata.json`, length checker |
+| Repo hygiene and CI | `claude/repo-hygiene-ci` | `.gitignore`, gitleaks config, GitHub Actions CI, brand-rule checker, `CLAUDE.md`, PR template |
+| Cloud Run + Vertex infra | `claude/infra-cloud-run` | `infra/terraform`, preview-api skeleton, Cloud Build, migration doc |
+| Lead-management emails | `claude/lead-emails` | `packages/lead-emails/` eight Postmark templates with previews and tests |
+
+Second wave (same day): capacity research (`claude/research-capacity`), four more
+articles (`claude/seo-cluster-c-accuracy`, `-e-compare`, `-i-consent`, `-f-measure`),
+an article build kit (`claude/seo-build-kit`: static pages, sitemap merge, validation,
+CI artifact; it never deploys), a LinkedIn post pack for every existing and new article
+(`claude/linkedin-article-pack`), and one editorial review-and-fix session per article
+PR (#1, #2, #3, #4, #7, #8, #9, #11) applying `_seo/EDITORIAL_STANDARD.md` and setting
+`status: reviewed`.
+
+Recurring Routines (claude.ai -> Routines):
+- "AfterVue weekly SEO article (cloud session)", Mondays 7:47 AM ET: one new reviewed
+  article as a draft PR.
+- "AfterVue weekly LinkedIn post rows for new articles", Mondays 9:17 AM ET: a post row,
+  card and scheduling brief for every article without one, on the Tue/Thu 8:30 AM ET
+  plus alternating Monday cadence. Scheduling itself happens from the Mac through
+  LinkedIn's native scheduler, per the aftervue-linkedin-manager skill.
+
+## 8. The real codebase and the one-click unlock
+
+The site, iOS app and tooling live in **`AfterVue/aftervue-ai`** (branch
+`domain-getaftervue`), not in this planning repo. Cloud sessions cannot clone it: the
+Claude GitHub App is not installed on that repository (checked Oct 9, access denied).
+Fix: GitHub -> AfterVue org -> Settings -> GitHub Apps -> Claude -> Repository access ->
+add `aftervue-ai`. Once that is done, sessions can convert the article drafts into the
+real `_seo/drafts/` format, run `tools/seo/build_articles.py`, render LinkedIn cards
+with `tools/social/av_cards.py`, and open PRs against `domain-getaftervue`; the Mac
+session then deploys as usual. Until then the drafts, standard, build kit and LinkedIn
+pack are complete here and are copied over by hand or by the Mac session.
+
+Also waiting on that access (or a push of the code here): secrets audit of the real
+history, CI against the real test suites, wiring the resilience module into
+`/api/generate`, the Cloud Run deploys, Turnstile and Sentry in the live functions,
+per-tenant tokens.
+
+## 9. iOS app and ops errors found in mail (Oct 9) and the fix tasks
+
+Source: the connected mailbox mikel@getaftervue.com. The Apple ID mailbox
+scaleforcenow@gmail.com is not connected to cloud sessions, so App Store Connect,
+TestFlight and Xcode mail could not be reviewed yet (issue #21 explains how to unlock
+it: connect it as a Gmail connector, forward apple.com mail to mikel@getaftervue.com,
+or run the review from a local Cowork session).
+
+| Issue | What is wrong | Severity |
+| --- | --- | --- |
+| [#16](https://github.com/scaleforcenow-maker/aftervue/issues/16) | Previews degraded: 429 quota on `gemini-2.5-flash-image` during the Oct 9 TestFlight session; a render path is still on the Gemini Developer API instead of Vertex | P0 |
+| [#17](https://github.com/scaleforcenow-maker/aftervue/issues/17) | Every ops alert to mikelmcnamara@icloud.com bounces (iCloud 554 5.7.1 HM08); no alert has been delivered for two weeks | P0 |
+| [#18](https://github.com/scaleforcenow-maker/aftervue/issues/18) | Activation PIN redeemed from two IPs; no device binding or PIN rotation | P1 |
+| [#19](https://github.com/scaleforcenow-maker/aftervue/issues/19) | Supabase stops auto-granting Data API access to new tables on Oct 30 | P1 |
+| [#20](https://github.com/scaleforcenow-maker/aftervue/issues/20) | Notify mailer Apps Script scope failures (Sept 18); verify and add a smoke test | P2 |
+| [#21](https://github.com/scaleforcenow-maker/aftervue/issues/21) | Review scaleforcenow@gmail.com for Apple errors once reachable | P1 |
+
+The check-in routine launches one fix session per issue in `AfterVue/aftervue-ai` as
+soon as that repository is reachable, and re-checks the mailbox for recurrences.
