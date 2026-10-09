@@ -1,0 +1,71 @@
+# Article build kit: validates _seo/drafts/ and builds the /resources/ pages.
+#
+# This workflow BUILDS and VALIDATES only. It never deploys. The built pages
+# are uploaded as the `resources-pages` artifact so the founder can download
+# them and publish from the Mac (see tools/seo/publish/README.md).
+name: Articles
+
+on:
+  pull_request:
+    paths:
+      - "_seo/drafts/**"
+      - "tools/seo/publish/**"
+      - ".github/workflows/articles.yml"
+  push:
+    paths:
+      - "_seo/drafts/**"
+      - "tools/seo/publish/**"
+      - ".github/workflows/articles.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: articles-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Validate drafts and build pages
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: tools/seo/publish/requirements.txt
+
+      - name: Install
+        run: python -m pip install -r tools/seo/publish/requirements.txt
+
+      - name: Unit tests
+        run: python -m pytest -q tools/seo/publish
+
+      - name: Validate drafts
+        id: check
+        run: |
+          python tools/seo/publish/check_drafts.py | tee check-report.txt
+          {
+            echo "## Draft validation"
+            echo
+            python tools/seo/publish/check_drafts.py --format markdown || true
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Build pages (drafts included, invalid ones skipped)
+        if: always()
+        run: python tools/seo/publish/build.py --include-drafts --skip-invalid --out site_out
+
+      - name: Upload built pages
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: resources-pages
+          path: |
+            site_out/
+            check-report.txt
+          if-no-files-found: warn
+          retention-days: 30
