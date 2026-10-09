@@ -105,10 +105,12 @@ coverage.xml
 # --- Xcode / Swift / macOS ---------------------------------------------------
 build/
 DerivedData/
-*.xcodeproj/
+# `dir/*` not `dir/`: git cannot re-include a file whose parent directory is
+# excluded, so the negations below only work with the `/*` form.
+*.xcodeproj/*
 !*.xcodeproj/project.pbxproj
 !*.xcodeproj/xcshareddata/
-*.xcworkspace/
+*.xcworkspace/*
 !*.xcworkspace/contents.xcworkspacedata
 !*.xcworkspace/xcshareddata/
 xcuserdata/
@@ -159,7 +161,7 @@ playground.xcworkspace
 .TemporaryItems
 .VolumeIcon.icns
 .com.apple.timemachine.donotpresent
-Icon?
+Icon
 Thumbs.db
 ehthumbs.db
 Desktop.ini
