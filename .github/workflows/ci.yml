@@ -246,11 +246,11 @@ jobs:
         env:
           RESULTS: ${{ toJSON(needs) }}
         run: |
-          echo "$RESULTS" | python3 -c '
-          import json, sys
-          needs = json.load(sys.stdin)
+          python3 - <<'PY'
+          import json, os, sys
+          needs = json.loads(os.environ["RESULTS"])
           bad = {k: v["result"] for k, v in needs.items() if v["result"] in ("failure", "cancelled")}
           for k, v in sorted(needs.items()):
-              print(f"{k:16s} {v[\"result\"]}")
+              print(f"{k:16s} {v['result']}")
           sys.exit(1 if bad else 0)
-          '
+          PY
