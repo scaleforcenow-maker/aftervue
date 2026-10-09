@@ -1,82 +1,69 @@
 ---
 title: "Medspa Marketing Software: What It Covers and Leaves Out"
-description: "A plain-English map of medspa marketing software: EMR and CRM suites, agencies and AI marketing teams, where each is strong, and the gap left on your site."
+description: "Compare medspa marketing software by category: practice suites, agencies, and AI marketing teams. Use the decision table to buy the right one first."
 slug: medspa-marketing-software
 date: 2026-10-09
 cluster: "D"
 target_page: "/services.html"
 internal_links:
   - "/services.html"
-  - "/"
+  - "/resources/"
   - "/app/"
+  - "/"
 sources:
-  - "https://www.zenoti.com/medical-spa-software (unverified from sandbox)"
-  - "https://www.patientnow.com/resources/blog/how-to-generate-leads-for-a-medical-spa (unverified from sandbox)"
-  - "https://www.joinblvd.com/blog/boulevard-subscription-whats-included (unverified from sandbox)"
-  - "https://aestheticspro.com/medspa-software (unverified from sandbox)"
-  - "https://www.studio3marketing.com/med-spa/ (unverified from sandbox)"
-  - "https://leadtoconversion.com/medspa/seo/ (unverified from sandbox)"
-status: draft
+  - https://www.zenoti.com/medical-spa-software/features
+  - https://www.patientnow.com/resources/blog/how-to-generate-leads-for-a-medical-spa
+  - https://www.joinblvd.com/blog/boulevard-subscription-whats-included
+  - https://www.aestheticspro.com/Software-Features/
+  - https://www.studio3marketing.com/med-spa/services/seo/
+  - https://www.studio3marketing.com/med-spa/services/video-and-photography/
+  - https://leadtoconversion.com/medspa/seo/
+status: reviewed
 ---
 
-Search for "medspa marketing software" and the first page is mostly practice management systems. That is not wrong, but it hides a choice. Three different kinds of vendor answer that query, and they solve different problems. This is a plain-language map of the category, so you can tell which piece you are actually shopping for.
+"Medspa marketing software" is three different purchases wearing one label. Practice management suites such as Zenoti, PatientNow, Boulevard and AestheticsPro market to people already in your database. Agencies such as Studio 3 Marketing and Lead to Conversion bring strangers to your website. A productized AI marketing team does the weekly content, email and reporting that sits between the two.
 
-## Three things that share one label
+Buy the category that matches the problem you can name today, not the one with the longest feature list. The decision table below tells you which category to shop for, what it will not do, and the first question to ask on the call.
 
-An owner asking for marketing software usually means one of three things:
+## Medspa marketing software: who each category serves
 
-- **A practice management suite with marketing features.** Zenoti, PatientNow, Boulevard and AestheticsPro are booking, EMR and CRM platforms first. Marketing is a module inside them.
-- **An agency retainer.** Studio 3 Marketing and Lead to Conversion are people who run your website, search, paid ads and content for a monthly fee.
-- **A productized AI marketing team.** AI specialists do the recurring work of content, email, social, search and reporting, with a human responsible for what goes out.
+**Suites start after a name and phone number exist.** Zenoti's medical spa feature guide ties bookings, reviews and campaigns to one patient record and builds segments from treatment history, membership status and visit recency ([Zenoti](https://www.zenoti.com/medical-spa-software/features)). Boulevard describes email and text campaigns triggered by booking data, with rebooking nudges, slow-day promotions and a drag-and-drop campaign builder ([Boulevard](https://www.joinblvd.com/blog/boulevard-subscription-whats-included)). AestheticsPro lists lead tracking with cost and return visibility, lead assignment, e-blasts and drip email ([AestheticsPro](https://www.aestheticspro.com/Software-Features/)). PatientNow's lead guide leans on speed-to-lead replies, before-and-after galleries and automated nurture sequences, plus a booking button on every page ([PatientNow](https://www.patientnow.com/resources/blog/how-to-generate-leads-for-a-medical-spa)).
 
-Each is strong somewhere. None covers everything.
+That is real value. The limit is the starting line: a suite can nurture a lead, but it cannot create one from an anonymous visitor.
 
-## Suites: strongest once someone is already a patient
+**Agencies work the other end.** Studio 3 Marketing sells search, paid advertising, branding, and video and photography production built for med spas ([Studio 3 Marketing search](https://www.studio3marketing.com/med-spa/services/seo/), [Studio 3 Marketing video](https://www.studio3marketing.com/med-spa/services/video-and-photography/)). Lead to Conversion's med spa search program covers Google Business Profile work per location, treatment-specific landing pages, and monthly reports on rankings, organic traffic and consultation bookings ([Lead to Conversion](https://leadtoconversion.com/medspa/seo/)). If nobody finds you, this is the right call. The trade-off is that the work lives inside the agency's process.
 
-The suites earn their reputation once a person has a record in your system. Zenoti positions its medical spa product around a single client database, automated targeted marketing and card-on-file deposits at booking. Boulevard describes messaging triggered by booking data, such as rebooking reminders and slow-day promotions, plus segmentation and campaign builders. AestheticsPro bundles lead tracking, segmented email and text, and campaigns tied to service history. PatientNow's lead-generation guidance leans on speed-to-lead replies, before-and-after galleries and automated nurture sequences.
+**AI marketing teams cover the recurring middle.** Treatment-page copy, the monthly email, social captions, Google Business Profile posts, and a report someone reads, at a cadence a small practice cannot staff. It only works when a named human is accountable for what the AI produces. With nobody in that seat, it is a liability for a medical business.
 
-That is real value. Reminders, win-back campaigns and review requests run themselves, and the data lives next to the chart. If you are choosing a suite, look for the consultation software inside it: consult workflows, consent forms and photo documentation are often part of the package.
+## Decision table: match the problem to the purchase
 
-The limit is that all of this starts after a name and phone number exist. A suite can nurture a lead. It cannot create one from a stranger on your homepage.
+| Your situation today | Shop for | It will not | First question on the call |
+| --- | --- | --- | --- |
+| Leads arrive, but nobody replies within the hour | The marketing module of a suite, probably the one you already run | Bring new visitors to the site | "Show me the automation that fires when a web form lands, and who on my team can edit it." |
+| Nobody finds you for the treatments you want to be known for | An agency: search, ads, landing pages | Nurture the lead after the form | "Which accounts, pages and ad histories stay in our name if we leave?" |
+| You know what to publish and never get to it | An AI marketing team with a named human reviewer | Replace your EMR or CRM | "Who approves each piece before it goes live, and can I see that queue?" |
+| Traffic is fine, consult requests are not | A reason to act on the treatment page itself | Fix slow follow-up | "What happens to the visitor who reads two pages and leaves?" |
 
-## Agencies: strongest at bringing traffic
+Bring this to the demo. If a vendor cannot answer the last column in one sentence, the fit is wrong.
 
-Agencies work the other end. Studio 3 Marketing offers branding, custom websites, photo and video production and search for aesthetic practices. Lead to Conversion focuses on search, content, paid ads, landing pages and conversion optimization for medspas.
+## Five questions before you sign any of them
 
-If your problem is that nobody finds you, an agency is often the right call. The trade-offs are familiar: the work lives in the agency's process, reporting tends to be framed around traffic and rankings, and the fee buys a slice of a team's time rather than an always-on system.
+1. **Data.** Which visitor or patient data does the tool touch, where is it stored, for how long, and will they sign a business associate agreement if any of it is health information? This is not legal advice. Ask your counsel which of your data counts.
+2. **Exit.** What exports on the day you cancel: the email list, the content, the campaign history, the analytics?
+3. **Booking.** Does every call to action land on your own booking page, or on a form the vendor controls?
+4. **Disclosure.** For anything AI-assisted, who reviews it and how is that review recorded?
+5. **Scope.** What do they not do? A good vendor answers fast.
 
-## AI marketing teams: strongest at the recurring middle
+The [resources section](/resources/) has the longer comparison of agency retainers against AI teams, and a separate piece on what patients search before they call.
 
-Between "get found" and "manage the patient" sits a lot of unglamorous weekly work. Blog posts for the services you want to be known for. The monthly email. Social captions. Google Business Profile updates. Reporting that someone actually reads.
+## The visitor every category misses
 
-A productized AI marketing team covers that middle with named specialist roles at a cadence a small practice could not staff on its own. The questions to ask are whether a human is accountable for what the AI produces, who approves content before it publishes, and whether you own the accounts. An AI team with no human in the loop is a liability for a medical business, not a shortcut.
+A person searching for lip filler lands on your site, reads for a minute, and closes the tab. Interested enough to arrive, not sure enough to call. The suite never sees them. The agency counts them as traffic. Why a medspa website does not convert has its own article in the [resources section](/resources/).
 
-## The gap every category leaves: the visitor who leaves
-
-Here is what none of the three reliably solves. A person searching for lip filler lands on your site, reads for a minute, and closes the tab. They were interested enough to arrive and not sure enough to reach out. Suites never see them. Agencies count them as traffic. Content teams hope the next article does better.
-
-That hesitation is usually about one question: what would this look like on me. A gallery answers it for other people, not for the visitor.
-
-## Why a preview tool belongs in the marketing stack
-
-A preview tool on the practice's own website lets that visitor upload a photo and see an illustrative AI preview of a treatment direction, without first handing over contact details. It is not a diagnosis or a promise of an outcome. It answers the question that was keeping them from reaching out.
-
-Placed on your own site, it turns an anonymous visit into a moment of consideration, right where the person already is. Your existing booking link does the rest. A preview tool should not try to be the booking system, and it should not store the visitor's photos.
-
-## How to evaluate any vendor in this category
-
-Whichever vendor you are talking to, the same checklist applies:
-
-1. **Ownership.** Are the website, domain, ad accounts, email list and analytics in your name? If you leave, do they come with you?
-2. **Approval.** Who signs off before something goes live under your brand? For anything AI-assisted, is a specific human responsible?
-3. **Data handling.** What patient or visitor data does the tool touch, where is it stored, and for how long?
-4. **Reporting.** Does the monthly report tie back to consults booked, or to impressions and rankings? Ask to see a sample.
-5. **Scope honesty.** Ask what they do not do. A good vendor answers quickly.
+The hesitation usually comes down to one question: what would this look like on me. A gallery answers it for other people. A preview tool on your own site lets the visitor upload a photo and see an illustrative AI preview of a possible treatment direction, labeled as an illustration, without handing over contact details first. It is not a diagnosis or a promise of an outcome. It should never store the photo, and it should hand off to your existing booking link rather than try to be the booking system.
 
 ## Where AfterVue fits
 
-AfterVue sits in two of these boxes and deliberately not the third. The [preview app](/app/) is a photoreal, illustrative AI before-and-after preview that lives on a practice's own site. Photos are never stored, previews are labeled as illustrative, and it does not book consults; your existing booking flow does. Alongside it, the [AI marketing team](/services.html) is seven specialist roles covering the recurring middle, managed and monitored by a dedicated human who approves what goes out and reports on consults rather than impressions. It is not an EMR or a CRM, and not a replacement for a suite you already run. To see the product first, start on the [home page](/).
+AfterVue sits in two of these boxes and deliberately not the third. The [preview app](/app/) is a photoreal, illustrative AI before-and-after preview that lives on a practice's own site. Photos are never stored, every preview is labeled illustrative, and it does not book consults; your own booking flow does. Alongside it, the [AI marketing team](/services.html) is seven specialist roles covering the recurring middle, managed and monitored by a dedicated human who approves what goes out and reports on consults rather than impressions. It is not an EMR or a CRM, and it does not replace a suite you already run. See the product first on the [home page](/).
 
-## See what's behind the app
-
-[See what's behind the app](/services.html) for a plain description of each specialist role and how the human oversight works, or [book a live demo](/services.html#demo) and we will walk through it.
+[See what's behind the app](/services.html) for a plain description of each role and how the human oversight works, or [book a live demo](/services.html#demo) and we will walk through it.
