@@ -325,3 +325,45 @@ or run the review from a local Cowork session).
 
 The check-in routine launches one fix session per issue in `AfterVue/aftervue-ai` as
 soon as that repository is reachable, and re-checks the mailbox for recurrences.
+
+## 10. Closing status (Oct 9, 05:55 UTC): credit nearly spent
+
+The founder reported about $18 of the $250 remaining. All 32 child sessions have
+finished (reported child spend about $204; the rest is this coordinating session).
+No new sessions are being launched; the four-hour check-in is not re-armed. The two
+Monday routines (SEO article, LinkedIn rows) remain enabled and will draw on the plan
+allowance from now on; disable them at claude.ai -> Routines if that is not wanted.
+
+### What exists now (26 PRs, 6 issues)
+
+Articles, all reviewed against `_seo/EDITORIAL_STANDARD.md` and marked ready for review:
+#1 Cluster A buyer's guide · #2 Cluster D marketing software · #3 Cluster G consult room ·
+#4 Cluster J website design · #7 Cluster F what to measure · #8 Cluster I consent script ·
+#9 Cluster C simulator accuracy · #11 Cluster E agency vs AI team. Drafted with self-review
+(no second pass): #24 HIPAA basics · #25 staff training · #26 under-eye and jawline.
+
+Code and content tooling: #5 App Store es/pt-BR metadata (reviewed) · #6 repo hygiene and
+CI (reviewed) · #10 Stripe catalog tool (reviewed) · #12 lead-management emails (reviewed) ·
+#13 Cloud Run infra scaffold · #14 Vertex resilience module · #15 capacity research ·
+#22 article build kit · #23 LinkedIn post pack. PRs #13, #14, #15, #22 and #23 did not get a
+separate review pass before the credit ran out; read them before merging.
+
+Issues #16 to #21: iOS and ops errors with fix plans (section 9).
+
+### Suggested merge order into the default branch
+
+1. #6 (hygiene, CI) so later merges get CI and the brand checker.
+2. #22 (build kit), then the eight reviewed articles (#1, #2, #3, #4, #7, #8, #9, #11),
+   then #24, #25, #26 after a read-through.
+3. #23 (LinkedIn pack) once the articles are in, then run the scheduling brief from the Mac.
+4. #10, #12, #14, #13, #15, #5 as time allows; none blocks the others.
+
+### Still needing you
+
+- Add `aftervue-ai` to the Claude GitHub App so the drafts can be ported into the real
+  site build and the issue fixes can be made in code.
+- Publish from the Mac after merging (the build kit never deploys).
+- Schedule the LinkedIn posts from the Mac through LinkedIn's native scheduler.
+- Connect or forward the scaleforcenow@gmail.com inbox for the Apple error review (#21).
+- Fix the alert recipient (#17) and the render path quota (#16) first; they are live
+  production problems.
