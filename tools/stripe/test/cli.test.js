@@ -2,11 +2,16 @@ import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
+import { fileURLToPath } from 'node:url';
+import { cp, mkdtemp, rm, writeFile, readFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
 import { assertModeAllowed, parseCli, UsageError } from '../provision.js';
 
 const run = promisify(execFile);
-const CLI = new URL('../provision.js', import.meta.url).pathname;
-const SAMPLE = new URL('../catalog.sample.json', import.meta.url).pathname;
+const TOOL_DIR = fileURLToPath(new URL('..', import.meta.url));
+const CLI = path.join(TOOL_DIR, 'provision.js');
+const SAMPLE = path.join(TOOL_DIR, 'catalog.sample.json');
 
 describe('mode safety', () => {
   test('live mode is refused without STRIPE_ALLOW_LIVE=1', () => {
@@ -71,13 +76,27 @@ describe('CLI process', () => {
     );
   });
 
+  test('works when the checkout path contains a space (URL.pathname regression)', async () => {
+    // The Mac checkout lives under "Documents/Claude/Aftervue AI". With
+    // URL.pathname the self-invocation check compared "Aftervue%20AI" against
+    // "Aftervue AI", never matched, and the CLI exited 0 having printed nothing.
+    const dir = await mkdtemp(path.join(tmpdir(), 'stripe tool '));
+    try {
+      await cp(CLI, path.join(dir, 'provision.js'));
+      await cp(path.join(TOOL_DIR, 'lib'), path.join(dir, 'lib'), { recursive: true });
+      await cp(SAMPLE, path.join(dir, 'catalog.json')); // exercises the default --catalog path too
+      const { stdout } = await run(process.execPath, [path.join(dir, 'provision.js'), '--mode', 'test', '--dry-run'], { env, cwd: dir });
+      assert.match(stdout, /DRY RUN - no changes will be made/);
+      assert.match(stdout, /create:product=11\s+create:price=54\s+create:coupon=1/);
+    } finally {
+      await rm(dir, { recursive: true, force: true });
+    }
+  });
+
   test('an invalid catalog exits 2 with the problem list', async () => {
-    const { writeFile, rm, mkdtemp } = await import('node:fs/promises');
-    const { tmpdir } = await import('node:os');
-    const path = await import('node:path');
     const dir = await mkdtemp(path.join(tmpdir(), 'catalog-'));
     const file = path.join(dir, 'catalog.json');
-    const raw = JSON.parse(await (await import('node:fs/promises')).readFile(SAMPLE, 'utf8'));
+    const raw = JSON.parse(await readFile(SAMPLE, 'utf8'));
     raw.products[0].prices[0].amount = 1.5;
     await writeFile(file, JSON.stringify(raw));
     try {

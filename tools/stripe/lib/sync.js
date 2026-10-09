@@ -172,7 +172,13 @@ function priceImmutableDrift(existing, desired) {
   const existingTB = existing.tax_behavior ?? 'unspecified';
   if (existingTB !== 'unspecified' && existingTB !== desired.tax_behavior) reasons.push(`tax_behavior ${existingTB} -> ${desired.tax_behavior}`);
   const existingProduct = typeof existing.product === 'object' && existing.product ? existing.product.id : existing.product;
-  if (desired.product && existingProduct !== desired.product) reasons.push(`product ${existingProduct} -> ${desired.product}`);
+  if (desired.product === null) {
+    // The catalog Product for this sku does not exist yet (it is being created
+    // in this run), so whatever Product this price hangs off is the wrong one.
+    reasons.push(`product ${existingProduct} -> new product for this sku`);
+  } else if (existingProduct !== desired.product) {
+    reasons.push(`product ${existingProduct} -> ${desired.product}`);
+  }
   return reasons;
 }
 
@@ -220,7 +226,7 @@ export async function planSync(stripe, catalog, { pruneArchived = false } = {}) 
     if (matches.length > 1) {
       const active = matches.filter((m) => m.active);
       if (active.length !== 1) {
-        throw new SyncError(`${matches.length} Products carry metadata.sku="${product.sku}" (${matches.map((m) => m.id).join(', ')}); archive the extras in the Dashboard before re-running`);
+        throw new SyncError(`${matches.length} Products carry metadata.sku="${product.sku}" (${matches.map((m) => m.id).join(', ')}) and ${active.length} of them are active; exactly one must be active. Archive or reactivate in the Dashboard before re-running`);
       }
       matches.splice(0, matches.length, active[0]);
     }
@@ -300,14 +306,15 @@ export async function planSync(stripe, catalog, { pruneArchived = false } = {}) 
   if (pruneArchived) {
     const managedProducts = allProducts.filter((p) => p.metadata?.managed_by === MANAGED_BY || catalogSkus.has(p.metadata?.sku));
     for (const prod of managedProducts) {
+      const sku = prod.metadata?.sku ?? prod.id; // a managed product always has a sku; fall back so printing never sees undefined
       const inCatalog = catalogSkus.has(prod.metadata?.sku);
       if (!inCatalog && prod.active) {
-        push({ op: 'archive', kind: 'product', key: prod.metadata.sku, id: prod.id, detail: `sku no longer in catalog; set active=false`, params: { active: false } });
+        push({ op: 'archive', kind: 'product', key: sku, id: prod.id, detail: `sku no longer in catalog; set active=false`, params: { active: false } });
       }
       const prices = await listAll(stripe.prices, { product: prod.id, active: true });
       for (const price of prices) {
         if (price.lookup_key && catalogKeys.has(price.lookup_key)) continue;
-        push({ op: 'archive', kind: 'price', key: price.lookup_key ?? price.id, sku: prod.metadata.sku, id: price.id, detail: `${inCatalog ? 'not in catalog' : 'belongs to pruned product'}; set active=false`, params: { active: false } });
+        push({ op: 'archive', kind: 'price', key: price.lookup_key ?? price.id, sku, id: price.id, detail: `${inCatalog ? 'not in catalog' : 'belongs to pruned product'}; set active=false`, params: { active: false } });
       }
     }
   }
@@ -393,9 +400,14 @@ export class SyncError extends Error {
   }
 }
 
-function idempotencyKey(kind, key, suffix, params) {
-  const digest = createHash('sha256').update(JSON.stringify(params ?? {})).digest('hex').slice(0, 24);
-  return `${MANAGED_BY}:${kind}:${key}:${suffix}:${digest}`;
+/**
+ * Stripe caps idempotency keys at 255 characters and lookup_keys at 200, so the
+ * object key is truncated for readability and the full (key, params) pair goes
+ * into the digest. Same key + same params => same idempotency key across runs.
+ */
+export function idempotencyKey(kind, key, suffix, params) {
+  const digest = createHash('sha256').update(`${key}\0${JSON.stringify(params ?? {})}`).digest('hex').slice(0, 32);
+  return `${MANAGED_BY}:${kind}:${suffix}:${String(key).slice(0, 64)}:${digest}`;
 }
 
 function describePrice(catalog, price) {

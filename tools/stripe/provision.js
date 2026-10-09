@@ -9,6 +9,7 @@
 
 import { parseArgs } from 'node:util';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { loadCatalog, CatalogError } from './lib/catalog.js';
 import { planSync, applyPlan, summarize, fmt, SyncError } from './lib/sync.js';
 
@@ -123,7 +124,7 @@ export async function main(argv = process.argv.slice(2), env = process.env) {
     return 0;
   }
 
-  const catalogPath = path.resolve(opts.catalog ?? path.join(path.dirname(new URL(import.meta.url).pathname), 'catalog.json'));
+  const catalogPath = path.resolve(opts.catalog ?? path.join(path.dirname(fileURLToPath(import.meta.url)), 'catalog.json'));
 
   try {
     const connectivity = assertModeAllowed({ mode: opts.mode, key: env.STRIPE_SECRET_KEY, env, dryRun: opts.dryRun });
@@ -179,7 +180,10 @@ export async function main(argv = process.argv.slice(2), env = process.env) {
   }
 }
 
-const invokedDirectly = process.argv[1] && path.resolve(process.argv[1]) === new URL(import.meta.url).pathname;
+// fileURLToPath, not URL.pathname: the latter percent-encodes spaces (e.g. a
+// checkout under "Aftervue AI/"), the comparison fails, and the CLI silently
+// does nothing.
+const invokedDirectly = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 if (invokedDirectly) {
   main().then((code) => process.exit(code), (err) => {
     console.error(err);

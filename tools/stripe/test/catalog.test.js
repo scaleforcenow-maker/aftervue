@@ -123,13 +123,16 @@ describe('catalog schema', () => {
 
   test('unreadable or malformed files produce a CatalogError', async () => {
     await assert.rejects(loadCatalog('/nonexistent/catalog.json'), (e) => e instanceof CatalogError && /cannot read/.test(e.message));
-    const tmp = new URL('./bad.json', new URL(process.env.TMPDIR ? `file://${process.env.TMPDIR}/` : 'file:///tmp/'));
-    const { writeFile, rm } = await import('node:fs/promises');
+    const { writeFile, rm, mkdtemp } = await import('node:fs/promises');
+    const { tmpdir } = await import('node:os');
+    const path = await import('node:path');
+    const dir = await mkdtemp(path.join(tmpdir(), 'catalog-bad-'));
+    const tmp = path.join(dir, 'bad.json');
     await writeFile(tmp, '{ not json');
     try {
       await assert.rejects(loadCatalog(tmp), (e) => e instanceof CatalogError && /not valid JSON/.test(e.message));
     } finally {
-      await rm(tmp, { force: true });
+      await rm(dir, { recursive: true, force: true });
     }
   });
 });

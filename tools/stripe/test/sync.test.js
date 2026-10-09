@@ -2,7 +2,7 @@ import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { validateCatalog, allLookupKeys } from '../lib/catalog.js';
-import { sync, planSync, applyPlan, MANAGED_BY } from '../lib/sync.js';
+import { sync, planSync, applyPlan, MANAGED_BY, idempotencyKey } from '../lib/sync.js';
 import { createMockStripe } from './mock-stripe.js';
 
 const SAMPLE_PATH = new URL('../catalog.sample.json', import.meta.url);
@@ -113,6 +113,90 @@ describe('sync against an empty account', () => {
     assert.equal(stripe.writes().length, 0);
     assert.ok(actions.every((a) => a.op === 'noop'));
   });
+
+  test('prices.list({ lookup_keys }) is chunked by 10 and each chunk is paginated to completion', async () => {
+    const catalog = await loadSample();
+    const keys = allLookupKeys(catalog);
+    assert.ok(keys.length > 10, `sample must have more than 10 lookup keys (has ${keys.length})`);
+
+    // page size 3 < chunk size 10 forces has_more inside a single lookup_keys chunk
+    const stripe = createMockStripe({ pageSize: 3 });
+    await sync(stripe, catalog);
+    stripe.resetCalls();
+    const actions = await planSync(stripe, catalog);
+
+    const lookups = stripe.calls.filter((c) => c.method === 'prices.list' && c.args.lookup_keys);
+    assert.ok(lookups.every((c) => c.args.lookup_keys.length <= 10), 'never more than 10 lookup_keys per request');
+    const firstPages = lookups.filter((c) => !c.args.starting_after);
+    assert.equal(firstPages.length, Math.ceil(keys.length / 10), 'one chunk per 10 keys');
+    assert.deepEqual(firstPages.flatMap((c) => c.args.lookup_keys), keys, 'every catalog key is requested exactly once, in order');
+    const continuations = lookups.filter((c) => c.args.starting_after);
+    assert.ok(continuations.length >= firstPages.length, 'has_more pages inside a chunk are followed');
+    for (const c of continuations) {
+      assert.ok(firstPages.some((f) => JSON.stringify(f.args.lookup_keys) === JSON.stringify(c.args.lookup_keys)), 'continuation keeps the same lookup_keys filter');
+    }
+    assert.equal(actions.filter((a) => a.kind === 'price' && a.op !== 'noop').length, 0, 'every price was found despite paging');
+    assert.equal(stripe.writes().length, 0);
+  });
+
+  test('currency is taken from the catalog, normalized to lowercase, and fixed to usd for the sample', async () => {
+    const catalog = await loadSample();
+    assert.equal(catalog.currency, 'usd');
+    const stripe = createMockStripe();
+    await sync(stripe, catalog);
+    const creates = stripe.writes().filter((w) => w.method === 'prices.create');
+    assert.equal(creates.length, allLookupKeys(catalog).length);
+    assert.ok(creates.every((w) => w.args.params.currency === 'usd'), 'every price is created in usd');
+    assert.ok([...stripe.store.prices.values()].every((p) => p.currency === 'usd'));
+
+    // "USD" in the file is accepted and normalized, so the second run is still a no-op
+    const upper = JSON.parse(await readFile(SAMPLE_PATH, 'utf8'));
+    upper.currency = 'USD';
+    stripe.resetCalls();
+    const actions = await sync(stripe, validateCatalog(upper));
+    assert.equal(stripe.writes().length, 0);
+    assert.ok(actions.every((a) => a.op === 'noop'));
+
+    // currency is immutable on a Price: a change is a REPLACE for every price, never an in-place update
+    const eur = structuredClone(catalog);
+    eur.currency = 'eur';
+    const plan = await planSync(stripe, eur);
+    const priceOps = plan.filter((a) => a.kind === 'price');
+    assert.ok(priceOps.every((a) => a.op === 'replace'), 'currency change replaces every price');
+    assert.match(priceOps[0].detail, /currency usd -> eur/);
+    assert.ok(plan.filter((a) => a.kind === 'product').every((a) => a.op === 'noop'), 'products are untouched by a currency change');
+  });
+
+  test('every product and price carries the full metadata key set', async () => {
+    const catalog = await loadSample();
+    const stripe = createMockStripe();
+    await sync(stripe, catalog);
+    const REQUIRED = ['sku', 'plan_shape', 'income_account', 'managed_by'];
+    for (const p of stripe.store.products.values()) {
+      for (const k of REQUIRED) assert.ok(typeof p.metadata[k] === 'string' && p.metadata[k].length > 0, `product ${p.name} missing metadata.${k}`);
+      assert.equal(p.metadata.managed_by, MANAGED_BY);
+      assert.match(p.metadata.income_account, /^\d{4}$/);
+    }
+    const termKeys = new Set(catalog.products.flatMap((p) => p.prices.filter((pr) => pr.term_months !== null).map((pr) => pr.lookup_key)));
+    for (const pr of stripe.store.prices.values()) {
+      for (const k of REQUIRED) assert.ok(typeof pr.metadata[k] === 'string' && pr.metadata[k].length > 0, `price ${pr.lookup_key} missing metadata.${k}`);
+      assert.equal(pr.metadata.managed_by, MANAGED_BY);
+      assert.equal(termKeys.has(pr.lookup_key), 'term_months' in pr.metadata, `price ${pr.lookup_key} term_months metadata presence`);
+      // Stripe metadata limits: 40 chars per key, 500 per value
+      for (const [k, v] of Object.entries(pr.metadata)) assert.ok(k.length <= 40 && v.length <= 500, `metadata ${k} within Stripe limits`);
+    }
+    for (const c of stripe.store.coupons.values()) assert.equal(c.metadata.managed_by, MANAGED_BY);
+  });
+
+  test('idempotency keys stay under the 255-char Stripe limit for the longest allowed lookup_key', () => {
+    const longKey = 'x'.repeat(200);
+    const params = { lookup_key: longKey, metadata: { sku: 'x' }, unit_amount: 1 };
+    const k = idempotencyKey('price', longKey, 'replace', params);
+    assert.ok(k.length <= 255, `idempotency key is ${k.length} chars`);
+    assert.equal(k, idempotencyKey('price', longKey, 'replace', structuredClone(params)), 'deterministic across runs');
+    assert.notEqual(k, idempotencyKey('price', longKey, 'replace', { ...params, unit_amount: 2 }), 'changes with params');
+    assert.notEqual(k, idempotencyKey('price', longKey.slice(0, 199) + 'y', 'replace', params), 'full key is in the digest, not just the truncated prefix');
+  });
 });
 
 describe('idempotency', () => {
@@ -136,6 +220,9 @@ describe('idempotency', () => {
     assert.equal(stripe.writes().length, 0);
     assert.equal(stripe.store.products.size, 0);
     assert.ok(actions.length > 0 && actions.every((a) => a.op === 'create'));
+    // with a key, a dry run is read-only: only list/retrieve calls, even with --prune-archived
+    await sync(stripe, catalog, { dryRun: true, pruneArchived: true });
+    assert.ok(stripe.calls.every((c) => /\.(list|retrieve)$/.test(c.method)), `non-read call in dry run: ${stripe.calls.map((c) => c.method).join(',')}`);
   });
 
   test('a partially provisioned account is completed, not duplicated', async () => {
@@ -193,6 +280,61 @@ describe('drift handling', () => {
     stripe.resetCalls();
     await sync(stripe, changed);
     assert.equal(stripe.writes().length, 0, 'third run is a no-op again');
+  });
+
+  test('a renamed Product is updated in place and its default price nicknames follow, with no replacement', async () => {
+    const catalog = await loadSample();
+    const stripe = createMockStripe();
+    await sync(stripe, catalog);
+    const before = { products: stripe.store.products.size, prices: stripe.store.prices.size };
+    const videoId = [...stripe.store.products.values()].find((p) => p.metadata.sku === 'video').id;
+    stripe.resetCalls();
+
+    const renamed = structuredClone(catalog);
+    const video = renamed.products.find((p) => p.sku === 'video');
+    video.name = 'Video Production';
+    for (const pr of video.prices) pr.nickname = pr.nickname.replace('Video & Creative Production', 'Video Production');
+    const actions = await sync(stripe, renamed);
+
+    const productUpdates = actions.filter((a) => a.kind === 'product' && a.op === 'update');
+    assert.deepEqual(productUpdates.map((a) => [a.key, a.params]), [['video', { name: 'Video Production' }]], 'only the name is sent');
+    assert.equal(actions.filter((a) => a.op === 'create' || a.op === 'replace' || a.op === 'archive').length, 0, 'a rename never creates or archives anything');
+    const priceUpdates = actions.filter((a) => a.kind === 'price' && a.op === 'update');
+    assert.deepEqual(priceUpdates.map((a) => a.key).sort(), ['video_monthly', 'video_prepaid_12mo', 'video_prepaid_24mo', 'video_prepaid_6mo']);
+    assert.ok(priceUpdates.every((a) => Object.keys(a.params).join() === 'nickname'), 'only nickname changes on the prices');
+    assert.equal(stripe.store.products.get(videoId).name, 'Video Production', 'same Stripe Product id, new name');
+    assert.equal(stripe.store.prices.size, before.prices);
+    assert.equal(stripe.store.products.size, before.products);
+    assert.equal([...stripe.store.prices.values()].find((p) => p.lookup_key === 'video_monthly').nickname, 'Video Production - monthly');
+
+    stripe.resetCalls();
+    const again = await sync(stripe, renamed);
+    assert.equal(stripe.writes().length, 0);
+    assert.ok(again.every((a) => a.op === 'noop'));
+  });
+
+  test('a price whose lookup_key exists on a foreign Product is replaced onto the new catalog Product in one run', async () => {
+    const catalog = await loadSample();
+    const stripe = createMockStripe();
+    const foreign = await stripe.products.create({ name: 'Hand-made in the Dashboard', metadata: {} });
+    await stripe.prices.create({ product: foreign.id, currency: 'usd', unit_amount: 12345, lookup_key: 'app_monthly', recurring: { interval: 'month' } });
+    stripe.resetCalls();
+
+    const actions = await sync(stripe, catalog);
+    const replace = actions.find((a) => a.kind === 'price' && a.key === 'app_monthly');
+    assert.equal(replace.op, 'replace');
+    assert.match(replace.detail, /new product for this sku/);
+    const app = [...stripe.store.products.values()].find((p) => p.metadata.sku === 'app');
+    const live = [...stripe.store.prices.values()].filter((p) => p.lookup_key === 'app_monthly');
+    assert.equal(live.length, 1);
+    assert.equal(live[0].product, app.id, 'the lookup_key now lives on the catalog product');
+    const old = [...stripe.store.prices.values()].find((p) => p.product === foreign.id);
+    assert.equal(old.active, false, 'the foreign price is archived, not deleted');
+    assert.equal(old.lookup_key, null);
+
+    stripe.resetCalls();
+    assert.ok((await sync(stripe, catalog)).every((a) => a.op === 'noop'), 'converged in one run');
+    assert.equal(stripe.writes().length, 0);
   });
 
   test('metadata or nickname drift is updated in place without archiving', async () => {

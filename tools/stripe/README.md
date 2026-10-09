@@ -62,7 +62,7 @@ Always dry-run live first and read every `REPLACE` row.
 | --- | --- |
 | `--catalog <path>` | Catalog JSON. Defaults to `./catalog.json` next to the script (gitignored). |
 | `--mode test\|live` | Required. Which Stripe mode the key must belong to. |
-| `--dry-run` | Compute and print the plan; write nothing. With no `STRIPE_SECRET_KEY` the plan is computed against an empty account, which is handy for reviewing a catalog edit offline. |
+| `--dry-run` | Compute and print the plan; write nothing. With a key, only read calls are made (`products.list`, `prices.list`, `coupons.retrieve`). With no `STRIPE_SECRET_KEY` the `stripe` package is not even loaded: the plan is computed against an empty account with zero API calls, which is handy for reviewing a catalog edit offline. |
 | `--prune-archived` | Additionally **archive** (set `active=false`, never delete) managed Products and Prices that are no longer in the catalog. Without it, stale objects are left untouched and not reported. |
 
 Exit codes: `0` success, `1` Stripe API error, `2` usage/catalog/sync error, `3`
@@ -93,7 +93,7 @@ Summary: create:product=1  noop:product=9  update:product=1  create:price=1 ...
 | --- | --- |
 | `CREATE` | Object does not exist; will be created (with an idempotency key, so a crashed run can be re-run safely). |
 | `UPDATE` | Exists; mutable fields differ (name, description, tax_code, nickname, metadata, or it was archived and will be reactivated). |
-| `REPLACE` | A Price's **immutable** field differs (amount, currency, one-time vs recurring, interval, tax_behavior). The tool creates a new Price with `transfer_lookup_key: true` so the `lookup_key` moves to it atomically, then archives the old Price. Existing subscriptions keep the old Price. |
+| `REPLACE` | A Price's **immutable** field differs (amount, currency, one-time vs recurring, interval, tax_behavior, or it hangs off a different Product than the catalog one). The tool creates a new Price with `transfer_lookup_key: true` so the `lookup_key` moves to it atomically, then archives the old Price. Existing subscriptions keep the old Price. If the run dies between those two calls, the old Price stays active without a `lookup_key`; the next run with `--prune-archived` archives it. |
 | `ARCHIVE` | `--prune-archived` only: a managed object left the catalog and will be set inactive. |
 | `WARN` | A Coupon exists under the catalog id with different `percent_off`/`duration`. Coupons are immutable and this tool never deletes, so fix it in the Dashboard or pick a new id. |
 | `NOOP` | Already matches. |
@@ -272,12 +272,23 @@ the code, so they can be changed without a release:
 | `saas` | `txcd_10103001` | Software as a Service (SaaS) - Business Use | Aftervue (App), Multi-Location, Full Package |
 | `services` | `txcd_20030000` | General - Services | all services lines, setup and build fees |
 
-Both codes were checked against Stripe's product tax code documentation on
-2026-10-09 (`docs.stripe.com/tax/tax-codes`; the SaaS business-use code is also
-listed on `docs.stripe.com/tax/digital-products`). Re-verify in the Dashboard
-(*Products -> Tax codes*) before the live run; if Stripe has renamed or split a
-code, change the catalog, not the tool. Enabling Stripe Tax itself, setting the
-origin address, and registrations are Dashboard steps outside this tool.
+Verification status (2026-10-09): `docs.stripe.com` is not reachable from the
+cloud sessions that wrote and reviewed this tool, so neither code was read from
+Stripe's page directly. `txcd_10103001` = "Software as a service (SaaS) - business
+use" is confirmed by search results quoting `docs.stripe.com/tax/tax-codes` and
+`docs.stripe.com/tax/ai`. `txcd_20030000` = "General - Services" is confirmed only
+by third-party integrations that mirror Stripe's list; Stripe's own page names the
+category but the search excerpt truncated the id. **Before the first test-mode
+run, confirm both ids with the API, which needs no special permission:**
+
+```bash
+curl -s https://api.stripe.com/v1/tax_codes/txcd_10103001 -u "$STRIPE_SECRET_KEY:"
+curl -s https://api.stripe.com/v1/tax_codes/txcd_20030000 -u "$STRIPE_SECRET_KEY:"
+```
+
+If Stripe has renamed or split a code, change the catalog, not the tool. Enabling
+Stripe Tax itself, setting the origin address, and registrations are Dashboard
+steps outside this tool.
 
 ## Tests
 
@@ -287,8 +298,15 @@ npm test
 ```
 
 Covers: creation on an empty account, no-op on the second run, partial-run
-completion, amount change -> archive + replacement with `transfer_lookup_key`,
-in-place metadata updates, reactivation, `--prune-archived`, pagination, the live
-mode guard, key/mode mismatch, and schema rejections (non-integer amount, duplicate
-lookup_key, duplicate sku, bad tax code, bad account, missing term, non-zero anchor).
-No network: the Stripe client is `test/mock-stripe.js`.
+completion, amount change -> archive + replacement with `transfer_lookup_key`, a
+Product rename (in place; default nicknames follow; nothing replaced), a
+`lookup_key` found on a foreign Product (replaced onto the catalog Product in one
+run), in-place metadata updates, reactivation, `--prune-archived`, dry run making
+only read calls, `prices.list({ lookup_keys })` chunked by 10 with `has_more`
+paging inside a chunk, currency from the catalog (`usd`, uppercase normalized, a
+change is a REPLACE), the full metadata key set on every Product and Price,
+idempotency keys under Stripe's 255-char cap, the CLI run from a path containing
+a space, the live mode guard, key/mode mismatch, and schema rejections
+(non-integer amount, duplicate lookup_key, duplicate sku, bad tax code, bad
+account, missing term, non-zero anchor). No network: the Stripe client is
+`test/mock-stripe.js`.
