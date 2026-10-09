@@ -1,0 +1,17 @@
+# Copy to backend.tf (git-ignored) and fill in the bucket name. Create the bucket
+# once, in the same project, with versioning on and uniform access:
+#
+#   gcloud storage buckets create "gs://${PROJECT_ID}-tfstate" \
+#     --project "$PROJECT_ID" --location us-east4 \
+#     --uniform-bucket-level-access --public-access-prevention
+#   gcloud storage buckets update "gs://${PROJECT_ID}-tfstate" --versioning
+#
+# State contains service URLs and SA emails (no secret values: the secrets are
+# empty shells and versions are never managed here), but keep the bucket private.
+
+terraform {
+  backend "gcs" {
+    bucket = "REPLACE_ME-tfstate"
+    prefix = "aftervue/cloud-run"
+  }
+}

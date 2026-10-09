@@ -1,0 +1,26 @@
+# Copy to terraform.tfvars (git-ignored). Everything that identifies the company
+# lives here or in TF_VAR_* env vars, never in the committed .tf files.
+
+project_id = "REPLACE_WITH_PROJECT_ID"
+region     = "us-east4"
+
+# Gemini image models are served only from the global endpoint today.
+vertex_location    = "global"
+firestore_location = "us-east4" # or "nam5"
+
+allowed_origins = [
+  "https://REPLACE_WITH_SITE_DOMAIN",
+  "https://REPLACE_WITH_APP_DOMAIN",
+]
+
+tenants = [
+  { id = "REPLACE_WITH_TENANT_ID", display_name = "Example Practice", timezone = "America/New_York" },
+]
+
+preview_api_max_instances = 3
+leads_api_max_instances   = 2
+
+# First apply: false. After adding secret versions: true.
+mount_secrets = false
+
+# notification_channel_ids = ["projects/REPLACE/notificationChannels/123"]

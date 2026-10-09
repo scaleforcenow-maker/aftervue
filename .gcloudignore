@@ -1,0 +1,12 @@
+# Keep Cloud Build uploads small and free of local state.
+.git
+.gitignore
+node_modules
+**/node_modules
+**/.terraform
+**/*.tfstate*
+**/terraform.tfvars
+**/backend.tf
+.env*
+**/.env*
+docs
