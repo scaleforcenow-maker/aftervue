@@ -1,13 +1,16 @@
 #!/usr/bin/env bash
 # Secret scan for the AfterVue repository (public repo, HIPAA-adjacent).
 #
-# Runs gitleaks with .gitleaks.toml across the FULL git history and exits
+# Runs gitleaks with .gitleaks.toml across the full git history reachable
+# from HEAD (every commit on the current branch and its base) and exits
 # non-zero if anything is found. Uses an installed `gitleaks` if present;
 # otherwise downloads the pinned release into a cache directory, verifies the
 # SHA-256 against the published checksum, and runs that.
 #
 # Usage:
-#   scripts/secret_scan.sh                 # full history (default)
+#   scripts/secret_scan.sh                 # full history reachable from HEAD (default)
+#   scripts/secret_scan.sh --all-refs      # every ref in the clone (audit mode; in CI
+#                                          # this includes other sessions' branches)
 #   scripts/secret_scan.sh --working-tree  # uncommitted files only (no git)
 #   scripts/secret_scan.sh --staged        # staged changes (pre-commit use)
 #   scripts/secret_scan.sh --report out.json
@@ -40,6 +43,7 @@ PRINT_BIN=0
 while [ $# -gt 0 ]; do
   case "$1" in
     --working-tree|--no-git) MODE="dir" ;;
+    --all-refs)              MODE="all" ;;
     --staged|--pre-commit)   MODE="staged" ;;
     --report)                REPORT="${2:?--report needs a path}"; shift ;;
     --print-bin)             PRINT_BIN=1 ;;
@@ -135,13 +139,20 @@ args=(--config "$CONFIG" --redact --no-banner --exit-code 1)
 
 cd "$REPO_ROOT"
 case "$MODE" in
-  git)
+  git|all)
     # Full history. In CI this needs `fetch-depth: 0` on actions/checkout.
     if git rev-parse --is-shallow-repository 2>/dev/null | grep -q true; then
       log "warning: shallow clone, history scan is incomplete (use fetch-depth: 0)"
     fi
-    log "scanning full git history"
-    set +e; "$GITLEAKS" git "${args[@]}" -v .; rc=$? ;;
+    if [ "$MODE" = "all" ]; then
+      log "scanning every ref in the clone"
+      set +e; "$GITLEAKS" git "${args[@]}" -v .; rc=$?
+    else
+      # gitleaks defaults to `git log --all`; restrict to what HEAD can reach so
+      # a pull request is judged on its own history, not on other branches.
+      log "scanning full git history reachable from HEAD"
+      set +e; "$GITLEAKS" git "${args[@]}" --log-opts="--full-history HEAD" -v .; rc=$?
+    fi ;;
   staged)
     log "scanning staged changes"
     set +e; "$GITLEAKS" git "${args[@]}" --pre-commit --staged -v .; rc=$? ;;

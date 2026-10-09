@@ -53,6 +53,7 @@ printf 'GEMINI_API_KEY=AIza%s\n' "$(alnum 35)"           > "$work/negative/tests
 printf 'POSTMARK_SERVER_TOKEN=00000000-0000-0000-0000-000000000000\n' > "$work/negative/placeholders.env"
 printf 'STRIPE_SECRET=${STRIPE_SECRET}\nVERCEL_TOKEN=process.env.VERCEL_TOKEN\n' > "$work/negative/envrefs.txt"
 printf 'STRIPE_SECRET=sk_live_REPLACE_ME_%s\n' "$(alnum 20)" > "$work/negative/replace_me.txt"
+printf "raw.products[1].prices[0].lookup_key = 'ai_marketing_prepaid_6mo';\nconst sku = \"app_monthly_core\";\n" > "$work/negative/stripe_ids.js"
 
 fail=0
 

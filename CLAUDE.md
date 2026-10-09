@@ -115,7 +115,7 @@ a local machine). If something is missing, run that script by hand.
 | Python tooling | `find tools -name '*.py' -print0 \| xargs -0 python3 -m py_compile` then `python3 -m pytest` if a `tests/` directory exists | add tests next to the tool you touch |
 | Doc sweep | `python3 tools/qa/doc_sweep.py` | run after editing `ops/` or `research/` |
 | Brand rules | `python3 scripts/brand_check.py` and `python3 -m unittest discover -s scripts/tests` | allowlist: `scripts/brand_check_allow.txt` |
-| Secret scan | `scripts/secret_scan.sh` (full history) or `--staged` | downloads a pinned gitleaks if none is installed |
+| Secret scan | `scripts/secret_scan.sh` (history reachable from HEAD), `--staged`, or `--all-refs` for a whole-clone audit | downloads a pinned gitleaks if none is installed |
 | Workflow lint | `scripts/lint_workflows.sh` | actionlint plus YAML parse |
 | iOS | not in the cloud. `xcodegen generate` then build in Xcode on the Mac | do not edit `aftervue-ios/` from a cloud session unless asked |
 

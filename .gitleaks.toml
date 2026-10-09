@@ -130,6 +130,8 @@ regexes = [
   '''00000000-0000-0000-0000-000000000000''',
   '''AIza[Xx]{35}''',
   '''(?i)(sk|rk)_(live|test)_[x\.]{20,}''',
+  # Stripe lookup keys and SKUs are public identifiers, not credentials.
+  '''(?i)\b(lookup_key|sku|price_id|product_id)\b\s*[:=]\s*['"][a-z0-9_\-]+['"]''',
 ]
 
 stopwords = [
