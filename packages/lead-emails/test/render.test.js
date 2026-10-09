@@ -502,7 +502,8 @@ describe('layout accessibility and client fallbacks', () => {
       assert.equal(imgs.length, 1, 'only the mark is an image');
       for (const img of imgs) assert.ok(/\balt="AfterVue"/.test(img), img);
       assert.ok(/<a class="av-logo"[^>]*color:#1B0F2E/.test(out.html), 'logo link has an explicit light-mode colour');
-      assert.ok(/@media \(prefers-color-scheme: dark\) \{[^}]*\.av-logo \{ color:#F3EDE4 !important; \}/.test(out.html), 'dark-mode rule covers the logo alt text');
+      const darkBlock = out.html.match(/@media \(prefers-color-scheme: dark\) \{([\s\S]*?)\n\}/)[1];
+      assert.ok(/\.av-logo \{ color:#F3EDE4 !important; \}/.test(darkBlock), 'dark-mode rule covers the logo alt text');
       assert.ok(/\[data-ogsc\] \.av-logo \{ color:#F3EDE4 !important; \}/.test(out.html), 'Outlook.com dark rule covers the logo alt text');
       assert.ok(/\[data-ogsb\] \.av-card \{ background-color:#241737 !important; \}/.test(out.html), 'Outlook.com dark background hook');
       assert.ok(/<!--\[if mso\]>[\s\S]*font-family: Arial, Helvetica, sans-serif !important;[\s\S]*font-family: Georgia, 'Times New Roman', serif !important;[\s\S]*<!\[endif\]-->/.test(out.html), 'MSO font fallback uses !important');
