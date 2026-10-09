@@ -1,0 +1,13 @@
+# Fonts downloaded at render time by tools/social/render_article_cards.py (OFL, fetched from Google Fonts' GitHub)
+tools/social/fonts/
+
+# Local banned-term list for tools/social/check_linkedin_pack.py (personal names stay off the public repo)
+tools/social/banned_terms.local.txt
+
+# Python
+__pycache__/
+*.pyc
+
+# Local env files never belong in the public repo
+.env
+.env.*
