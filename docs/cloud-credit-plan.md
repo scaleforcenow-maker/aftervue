@@ -367,3 +367,34 @@ Issues #16 to #21: iOS and ops errors with fix plans (section 9).
 - Connect or forward the scaleforcenow@gmail.com inbox for the Apple error review (#21).
 - Fix the alert recipient (#17) and the render path quota (#16) first; they are live
   production problems.
+
+## 11. Oct 10 check-in: paywall report, what is still open
+
+The founder reported that the iPhone build shows no paywall. The diagnosis, with the
+evidence and the test steps, is in `docs/ios-paywall-diagnosis-2026-10-10.md` and
+filed as issue #27. Short version: on the evening of Oct 8 a device completed the
+App Store **sandbox** free trial for Asunshine, and the backend minted a **400-day
+paid license** from it; the device, the sandbox Apple ID and the practice are all
+entitled now, so the paywall is skipped. The server must stop minting production-
+length licenses for sandbox transactions, and the client must treat StoreKit
+entitlements as the source of truth.
+
+Re-checked Oct 10, still blocked: `AfterVue/aftervue-ai` is not reachable (the Claude
+GitHub App is not installed on it), `getaftervue.com` is denied by the environment's
+network policy, and the second Gmail connector for `scaleforcenow@gmail.com` still
+fails authentication. All 20 PRs are open and unmerged; none has been merged into the
+default branch yet. Issues #16 to #21 and #27 are open.
+
+What a cloud session can do next without any of those unlocks:
+- Review PRs #13, #14, #15, #22 and #23 (the five that never got a review pass).
+- Merge-order help: each of the 20 PR branches was test-merged against the default
+  branch on Oct 10 and every one merges cleanly on its own. The suggested order in
+  section 10 still holds; merge #6 first so later merges get CI.
+
+What needs the founder (two settings and three clicks, no code):
+1. Add `aftervue-ai` to the Claude GitHub App. Everything in issues #16, #18, #19,
+   #20 and #27 is one fix session each once this is done.
+2. Add `getaftervue.com` and `*.vercel.app` to the environment's Allowed domains.
+3. Connect `scaleforcenow@gmail.com` as a Gmail connector or forward `apple.com` mail.
+4. Fix the alert recipient (#17): every iOS finding since Sept 18 bounced at iCloud.
+5. On the iPhone, follow §3 of the paywall diagnosis to see the paywall again today.
