@@ -188,3 +188,6 @@ logs/
 # --- Claude Code local state (keep settings.json, which is shared) -----------
 .claude/settings.local.json
 .claude/*.local.json
+
+# --- from seo-build-kit ---
+site_out/
