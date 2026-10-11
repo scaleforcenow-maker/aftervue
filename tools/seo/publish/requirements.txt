@@ -1,0 +1,7 @@
+# Runtime dependencies for tools/seo/publish (Python 3.11+).
+# Everything else the kit uses is in the standard library.
+markdown==3.11
+pyyaml==6.0.3
+
+# Test runner (only needed for `pytest`).
+pytest==9.1.1
