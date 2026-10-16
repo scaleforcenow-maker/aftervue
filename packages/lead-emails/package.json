@@ -1,0 +1,28 @@
+{
+  "name": "@aftervue/lead-emails",
+  "version": "0.1.0",
+  "description": "Transactional email templates for the AfterVue lead-management service (aftervue-leads). Zero runtime dependencies.",
+  "type": "module",
+  "private": true,
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=18"
+  },
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./postmark": "./postmark.js",
+    "./fixtures": "./fixtures/index.js"
+  },
+  "files": [
+    "src",
+    "postmark.js",
+    "fixtures",
+    "assets"
+  ],
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "previews": "node scripts/build-previews.js",
+    "previews:commit": "node scripts/build-previews.js --dest previews"
+  }
+}

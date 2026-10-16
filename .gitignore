@@ -191,3 +191,16 @@ logs/
 
 # --- from seo-build-kit ---
 site_out/
+
+# --- from linkedin-article-pack ---
+tools/social/fonts/
+tools/social/banned_terms.local.txt
+*.pyc
+
+# --- from stripe-catalog ---
+tools/stripe/catalog.*.json
+!tools/stripe/catalog.sample.json
+
+# --- from vertex-resilience ---
+
+# --- from appstore-localized-metadata ---

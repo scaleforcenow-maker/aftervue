@@ -18,3 +18,15 @@ section 8 for how cloud sessions get access to it.
   and brand-rules check on every pull request and `claude/**` push.
 - `scripts/secret_scan.sh`, `scripts/brand_check.py`, `scripts/lint_workflows.sh`:
   the same checks, runnable locally.
+- `tools/stripe/`: idempotent Stripe Product/Price catalog provisioning. Reads a
+  gitignored catalog JSON (pricing is never published); see its README.
+- `packages/lead-emails/`: transactional email templates for the lead-management
+  service (new lead, reminders, weekly digest, sign-in, invitation, retention,
+  export) with a Postmark adapter, tests and browser previews under
+  `packages/lead-emails/previews/`.
+- `packages/vertex-resilience/`: queue, rate limiting, retry, model fallback and
+  deadlines for the Vertex AI image calls behind `/api/generate`. Runbook in
+  `docs/preview-api-resilience.md`.
+- `infra/`: Terraform, Cloud Build and the `preview-api` service skeleton for
+  running `/api/generate` and lead management on Cloud Run under the Google Cloud
+  BAA. Cutover plan in `docs/cloud-run-migration.md`.

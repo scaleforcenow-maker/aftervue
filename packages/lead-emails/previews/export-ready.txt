@@ -1,0 +1,26 @@
+AfterVue
+
+EXPORT
+Your CSV export is ready
+========================
+
+The export you requested has been prepared. It is not attached to this email. Use the link below to download it.
+
+Practice:     Sample Medspa
+Date range:   Jul 1, 2026 to Oct 1, 2026
+Rows:         142
+Link expires: Fri, Oct 9, 2:00 PM
+
+Download the export:
+https://storage.googleapis.com/sample-bucket/exports/sample.csv?X-Goog-Signature=not-a-real-signature
+
+If the button does not work, copy this link into your browser:
+https://storage.googleapis.com/sample-bucket/exports/sample.csv?X-Goog-Signature=not-a-real-signature
+
+The file contains protected health information and is available because a Business Associate Agreement is on file for this practice. Store it only where your HIPAA policy allows, and delete it when it is no longer needed. The link stops working at the time shown above.
+
+--
+You received this because you requested a CSV export from AfterVue.
+Manage notifications: https://app.getaftervue.com/settings/notifications
+Questions: support@getaftervue.com
+This message was sent by AfterVue. It contains no patient details.

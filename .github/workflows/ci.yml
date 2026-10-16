@@ -159,6 +159,11 @@ jobs:
             if [ -d "$d" ]; then inputs="$inputs $d/**/*.md"; fi
           done
           echo "globs=$inputs" | tee -a "$GITHUB_OUTPUT"
+      # --base-url: the drafts link to site pages root-relatively (/resources/, /privacy.html); without a
+      # base lychee cannot resolve them and fails the run once drafts and this workflow share a tree.
+      # fda.gov / ftc.gov answer 404 to non-browser clients and ilga.gov serves a certificate chain
+      # lychee's client does not trust, so the drafts' statute and regulator citations (verified by hand,
+      # still indexed at those URLs) are excluded here rather than rewritten to a mirror.
       - name: Link check
         uses: lycheeverse/lychee-action@v2
         with:
@@ -170,6 +175,7 @@ jobs:
             --retry-wait-time 3
             --timeout 20
             --max-concurrency 8
+            --base-url https://getaftervue.com
             --accept "100..=103,200..=299,403,429"
             --exclude "^https?://(localhost|127\.0\.0\.1)"
             --exclude "^https?://[^/]*\.vercel\.app"
@@ -180,6 +186,8 @@ jobs:
             --exclude "^https?://console\.cloud\.google\.com"
             --exclude "^https?://admin\.google\.com"
             --exclude "^https?://claude\.ai/(code|settings)"
+            --exclude "^https?://(www\.)?(fda|ftc)\.gov/"
+            --exclude "^https?://(www\.)?ilga\.gov/"
             --glob-ignore-case
             ${{ steps.inputs.outputs.globs }}
           fail: true
