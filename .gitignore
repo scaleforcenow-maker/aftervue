@@ -196,3 +196,7 @@ site_out/
 tools/social/fonts/
 tools/social/banned_terms.local.txt
 *.pyc
+
+# --- from stripe-catalog ---
+tools/stripe/catalog.*.json
+!tools/stripe/catalog.sample.json

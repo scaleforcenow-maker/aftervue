@@ -1,0 +1,192 @@
+{
+  "version": 1,
+  "notes": "SAMPLE ONLY. Every amount here is a placeholder (12345-style). The real catalog.json is gitignored and never committed; AfterVue pricing is not published.",
+  "currency": "usd",
+  "tax_behavior": "exclusive",
+  "tax_codes": {
+    "saas": "txcd_10103001",
+    "services": "txcd_20030000"
+  },
+  "income_accounts": {
+    "4000": "App Subscription Revenue",
+    "4010": "AI Marketing Team",
+    "4020": "Website Build Fees",
+    "4021": "Website Hosting",
+    "4030": "Paid Ads Mgmt",
+    "4031": "Ad Spend Passthrough",
+    "4040": "Video",
+    "4050": "Local SEO",
+    "4060": "Analytics",
+    "4070": "Multi-Location",
+    "4080": "White-Label",
+    "4090": "Setup Fees"
+  },
+  "coupons": [
+    {
+      "id": "trial_conversion_5",
+      "name": "Trial-to-term conversion (5% off, once)",
+      "percent_off": 5,
+      "duration": "once"
+    }
+  ],
+  "products": [
+    {
+      "sku": "app",
+      "name": "Aftervue (App)",
+      "description": "Aftervue patient-facing preview app and embed widget (software subscription).",
+      "tax_code": "saas",
+      "income_account": "4000",
+      "prices": [
+        { "lookup_key": "app_monthly", "plan_shape": "monthly", "amount": 12345 },
+        { "lookup_key": "app_prepaid_6mo", "plan_shape": "prepaid", "term_months": 6, "amount": 67890 },
+        { "lookup_key": "app_prepaid_12mo", "plan_shape": "prepaid", "term_months": 12, "amount": 123450 },
+        { "lookup_key": "app_prepaid_24mo", "plan_shape": "prepaid", "term_months": 24, "amount": 234560 }
+      ]
+    },
+    {
+      "sku": "ai_marketing",
+      "name": "AI Marketing Team",
+      "description": "Managed AI marketing team service.",
+      "tax_code": "services",
+      "income_account": "4010",
+      "prices": [
+        { "lookup_key": "ai_marketing_monthly", "plan_shape": "monthly", "amount": 12345 },
+        { "lookup_key": "ai_marketing_prepaid_6mo", "plan_shape": "prepaid", "term_months": 6, "amount": 67890 },
+        { "lookup_key": "ai_marketing_prepaid_12mo", "plan_shape": "prepaid", "term_months": 12, "amount": 123450 },
+        { "lookup_key": "ai_marketing_prepaid_24mo", "plan_shape": "prepaid", "term_months": 24, "amount": 234560 },
+        { "lookup_key": "ai_marketing_setup_full", "plan_shape": "setup", "amount": 11111, "income_account": "4090" },
+        { "lookup_key": "ai_marketing_setup_6mo", "plan_shape": "setup", "term_months": 6, "amount": 5555, "income_account": "4090" }
+      ]
+    },
+    {
+      "sku": "website_hosting",
+      "name": "Custom Website - Hosting & Maintenance",
+      "description": "Hosting, updates and maintenance for a custom-built practice website.",
+      "tax_code": "services",
+      "income_account": "4021",
+      "prices": [
+        { "lookup_key": "website_hosting_monthly", "plan_shape": "monthly", "amount": 12345 },
+        { "lookup_key": "website_hosting_prepaid_6mo", "plan_shape": "prepaid", "term_months": 6, "amount": 67890 },
+        { "lookup_key": "website_hosting_prepaid_12mo", "plan_shape": "prepaid", "term_months": 12, "amount": 123450 },
+        { "lookup_key": "website_hosting_prepaid_24mo", "plan_shape": "prepaid", "term_months": 24, "amount": 234560 }
+      ]
+    },
+    {
+      "sku": "website_build",
+      "name": "Custom Website - Build Fee",
+      "description": "One-time design and build of a custom practice website.",
+      "notes": "One-time only. website_build_12_24 is the discounted build fee when paired with a 12- or 24-month hosting term.",
+      "tax_code": "services",
+      "income_account": "4020",
+      "prices": [
+        { "lookup_key": "website_build_full", "plan_shape": "build", "amount": 99999 },
+        { "lookup_key": "website_build_12_24", "plan_shape": "build", "term_months": "12_24", "amount": 55555 }
+      ]
+    },
+    {
+      "sku": "ads",
+      "name": "Paid Ads Management",
+      "description": "Paid advertising campaign management. Ad spend passthrough and overage above the managed-spend threshold are billed monthly in arrears as Invoice Items on the usage anchor.",
+      "tax_code": "services",
+      "income_account": "4030",
+      "prices": [
+        { "lookup_key": "ads_monthly", "plan_shape": "monthly", "amount": 12345 },
+        { "lookup_key": "ads_prepaid_6mo", "plan_shape": "prepaid", "term_months": 6, "amount": 67890 },
+        { "lookup_key": "ads_prepaid_12mo", "plan_shape": "prepaid", "term_months": 12, "amount": 123450 },
+        { "lookup_key": "ads_prepaid_24mo", "plan_shape": "prepaid", "term_months": 24, "amount": 234560 },
+        { "lookup_key": "ads_setup_full", "plan_shape": "setup", "amount": 11111, "income_account": "4090" },
+        { "lookup_key": "ads_setup_6mo", "plan_shape": "setup", "term_months": 6, "amount": 5555, "income_account": "4090" },
+        { "lookup_key": "ads_usage_anchor", "plan_shape": "usage_anchor", "amount": 0, "income_account": "4031",
+          "nickname": "Paid Ads - ad spend passthrough & overage (billed in arrears)" }
+      ]
+    },
+    {
+      "sku": "video",
+      "name": "Video & Creative Production",
+      "description": "Video and creative asset production.",
+      "tax_code": "services",
+      "income_account": "4040",
+      "prices": [
+        { "lookup_key": "video_monthly", "plan_shape": "monthly", "amount": 12345 },
+        { "lookup_key": "video_prepaid_6mo", "plan_shape": "prepaid", "term_months": 6, "amount": 67890 },
+        { "lookup_key": "video_prepaid_12mo", "plan_shape": "prepaid", "term_months": 12, "amount": 123450 },
+        { "lookup_key": "video_prepaid_24mo", "plan_shape": "prepaid", "term_months": 24, "amount": 234560 }
+      ]
+    },
+    {
+      "sku": "local_seo",
+      "name": "Local SEO & Reputation",
+      "description": "Local search optimization and review/reputation management.",
+      "tax_code": "services",
+      "income_account": "4050",
+      "prices": [
+        { "lookup_key": "local_seo_monthly", "plan_shape": "monthly", "amount": 12345 },
+        { "lookup_key": "local_seo_prepaid_6mo", "plan_shape": "prepaid", "term_months": 6, "amount": 67890 },
+        { "lookup_key": "local_seo_prepaid_12mo", "plan_shape": "prepaid", "term_months": 12, "amount": 123450 },
+        { "lookup_key": "local_seo_prepaid_24mo", "plan_shape": "prepaid", "term_months": 24, "amount": 234560 },
+        { "lookup_key": "local_seo_setup_full", "plan_shape": "setup", "amount": 11111, "income_account": "4090" },
+        { "lookup_key": "local_seo_setup_6mo", "plan_shape": "setup", "term_months": 6, "amount": 5555, "income_account": "4090" }
+      ]
+    },
+    {
+      "sku": "analytics",
+      "name": "Analytics & Attribution",
+      "description": "Marketing analytics and lead attribution reporting.",
+      "tax_code": "services",
+      "income_account": "4060",
+      "prices": [
+        { "lookup_key": "analytics_monthly", "plan_shape": "monthly", "amount": 12345 },
+        { "lookup_key": "analytics_prepaid_6mo", "plan_shape": "prepaid", "term_months": 6, "amount": 67890 },
+        { "lookup_key": "analytics_prepaid_12mo", "plan_shape": "prepaid", "term_months": 12, "amount": 123450 },
+        { "lookup_key": "analytics_prepaid_24mo", "plan_shape": "prepaid", "term_months": 24, "amount": 234560 },
+        { "lookup_key": "analytics_setup_full", "plan_shape": "setup", "amount": 11111, "income_account": "4090" },
+        { "lookup_key": "analytics_setup_6mo", "plan_shape": "setup", "term_months": 6, "amount": 5555, "income_account": "4090" }
+      ]
+    },
+    {
+      "sku": "multi_location",
+      "name": "Multi-Location - Additional Location",
+      "description": "Each additional practice location beyond the first.",
+      "tax_code": "saas",
+      "income_account": "4070",
+      "prices": [
+        { "lookup_key": "multi_location_monthly", "plan_shape": "monthly", "amount": 12345 },
+        { "lookup_key": "multi_location_prepaid_6mo", "plan_shape": "prepaid", "term_months": 6, "amount": 67890 },
+        { "lookup_key": "multi_location_prepaid_12mo", "plan_shape": "prepaid", "term_months": 12, "amount": 123450 },
+        { "lookup_key": "multi_location_prepaid_24mo", "plan_shape": "prepaid", "term_months": 24, "amount": 234560 }
+      ]
+    },
+    {
+      "sku": "whitelabel",
+      "name": "White-Label Partner",
+      "description": "White-label partner program. The per-active-client fee is billed monthly in arrears as Invoice Items on the usage anchor.",
+      "notes": "OPEN QUESTION: the source documents do not specify a White-Label setup fee, so none is modeled here.",
+      "tax_code": "services",
+      "income_account": "4080",
+      "prices": [
+        { "lookup_key": "whitelabel_monthly", "plan_shape": "monthly", "amount": 12345 },
+        { "lookup_key": "whitelabel_prepaid_6mo", "plan_shape": "prepaid", "term_months": 6, "amount": 67890 },
+        { "lookup_key": "whitelabel_prepaid_12mo", "plan_shape": "prepaid", "term_months": 12, "amount": 123450 },
+        { "lookup_key": "whitelabel_prepaid_24mo", "plan_shape": "prepaid", "term_months": 24, "amount": 234560 },
+        { "lookup_key": "whitelabel_usage_anchor", "plan_shape": "usage_anchor", "amount": 0,
+          "nickname": "White-Label - per-active-client fee (billed in arrears)" }
+      ]
+    },
+    {
+      "sku": "full_package",
+      "name": "Full Package",
+      "description": "Bundle of the Aftervue App and the managed services lines.",
+      "notes": "OPEN QUESTION: a single Stripe Product carries one tax_code and one income_account. If the bundle must show separate App and services lines on invoices, bill the component SKUs instead of this Product.",
+      "tax_code": "saas",
+      "income_account": "4000",
+      "prices": [
+        { "lookup_key": "full_package_monthly", "plan_shape": "monthly", "amount": 12345 },
+        { "lookup_key": "full_package_prepaid_6mo", "plan_shape": "prepaid", "term_months": 6, "amount": 67890 },
+        { "lookup_key": "full_package_prepaid_12mo", "plan_shape": "prepaid", "term_months": 12, "amount": 123450 },
+        { "lookup_key": "full_package_prepaid_24mo", "plan_shape": "prepaid", "term_months": 24, "amount": 234560 },
+        { "lookup_key": "full_package_setup_full", "plan_shape": "setup", "amount": 11111, "income_account": "4090" },
+        { "lookup_key": "full_package_setup_6mo", "plan_shape": "setup", "term_months": 6, "amount": 5555, "income_account": "4090" }
+      ]
+    }
+  ]
+}
