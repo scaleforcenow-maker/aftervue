@@ -18,3 +18,5 @@ section 8 for how cloud sessions get access to it.
   and brand-rules check on every pull request and `claude/**` push.
 - `scripts/secret_scan.sh`, `scripts/brand_check.py`, `scripts/lint_workflows.sh`:
   the same checks, runnable locally.
+- `tools/stripe/`: idempotent Stripe Product/Price catalog provisioning. Reads a
+  gitignored catalog JSON (pricing is never published); see its README.
