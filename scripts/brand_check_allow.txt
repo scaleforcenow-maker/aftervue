@@ -1,0 +1,15 @@
+# Allowlist for scripts/brand_check.py. One entry per line; `#` starts a comment.
+#
+#   path=<glob>                       skip the whole file
+#   rule=<id> path=<glob>             skip one rule for files matching the glob
+#   match=<text>                      allow a finding whose matched text is exactly <text>
+#   rule=<id> match=<text>            same, for one rule only
+#
+# Rules: exclamation, dollar-near-brand, botox, phone-number
+# Keep this list short and explain every entry. Pricing, real phone numbers,
+# and brand-name drugs in public drafts should be fixed in the copy, not
+# allowlisted.
+
+# Placeholder numbers used in templates and screenshots (never a real line).
+rule=phone-number match="(555) 555-5555"
+rule=phone-number match=555-555-5555
