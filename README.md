@@ -20,3 +20,7 @@ section 8 for how cloud sessions get access to it.
   the same checks, runnable locally.
 - `tools/stripe/`: idempotent Stripe Product/Price catalog provisioning. Reads a
   gitignored catalog JSON (pricing is never published); see its README.
+- `packages/lead-emails/`: transactional email templates for the lead-management
+  service (new lead, reminders, weekly digest, sign-in, invitation, retention,
+  export) with a Postmark adapter, tests and browser previews under
+  `packages/lead-emails/previews/`.

@@ -1,0 +1,26 @@
+AfterVue
+
+OWNER COPY
+A. Sample has not been contacted
+================================
+
+This lead was received 3 days ago and is still marked new. The assignee was reminded at 24 hours.
+
+First name:  A. Sample
+Assigned to: B. Sample
+Received:    Mon, Oct 5, 2:05 PM
+Waiting:     3 days
+
+Open the lead:
+https://app.getaftervue.com/inbox/leads/ld_sample_0001
+
+If the button does not work, copy this link into your browser:
+https://app.getaftervue.com/inbox/leads/ld_sample_0001
+
+You can reassign the lead or contact the person yourself from the inbox. No further reminders are sent for this lead.
+
+--
+You received this because you are the owner of Sample Medspa in AfterVue and a lead has gone 72 hours without contact.
+Manage notifications: https://app.getaftervue.com/settings/notifications
+Questions: support@getaftervue.com
+This message was sent by AfterVue. It contains no patient details.

@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>AfterVue lead emails, preview</title>
+<style>
+  :root { color-scheme: light dark; --plum:#1B0F2E; --gold:#C9A24B; --porcelain:#F8F4EF; --card:#fff; --text:#1B0F2E; --muted:#4A3D5E; --rule:#E8E0D6; }
+  @media (prefers-color-scheme: dark) { :root { --porcelain:#120A1F; --card:#241737; --text:#F3EDE4; --muted:#C9BFB3; --rule:#3B2C52; } }
+  body { margin:0; font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background:var(--porcelain); color:var(--text); }
+  .wrap { max-width:1400px; margin:0 auto; padding:24px 16px 64px; }
+  h1 { font-family: "Cormorant Garamond", Georgia, serif; font-weight:600; font-size:34px; margin:0 0 4px; }
+  .sub { color:var(--muted); margin:0 0 16px; font-size:14px; }
+  nav ul { list-style:none; padding:0; margin:0 0 24px; display:flex; flex-wrap:wrap; gap:8px; }
+  nav a { display:inline-block; padding:6px 10px; border:1px solid var(--rule); border-radius:999px; font-size:13px; color:var(--text); text-decoration:none; background:var(--card); }
+  section { background:var(--card); border-top:3px solid var(--gold); border-radius:10px; padding:20px; margin:0 0 24px; }
+  h2 { font-family: "Cormorant Garamond", Georgia, serif; font-weight:600; font-size:26px; margin:0 0 4px; }
+  .desc { margin:0 0 10px; color:var(--muted); font-size:14px; }
+  .pill { font-size:11px; letter-spacing:.04em; text-transform:uppercase; background:var(--gold); color:var(--plum); padding:2px 8px; border-radius:999px; margin-left:6px; }
+  dl { display:grid; grid-template-columns:max-content 1fr; gap:4px 12px; margin:0 0 16px; font-size:14px; }
+  dt { color:var(--muted); } dd { margin:0; }
+  .len { color:var(--muted); font-size:12px; margin-left:6px; }
+  .panes { display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
+  @media (max-width: 1000px) { .panes { grid-template-columns:1fr; } }
+  .pane-title { font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:0 0 6px; }
+  .pane-title a { color:var(--muted); margin-left:8px; }
+  iframe { width:100%; height:760px; border:1px solid var(--rule); border-radius:6px; background:#F8F4EF; }
+  pre { margin:0; padding:16px; border:1px solid var(--rule); border-radius:6px; background:var(--porcelain); font-size:12.5px; line-height:1.5; white-space:pre-wrap; word-break:break-word; min-height:200px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>AfterVue lead emails</h1>
+  <p class="sub">Rendered from fixtures. Every name is a placeholder. See docs/email-client-checklist.md for the client matrix.</p>
+  <nav><ul><li><a href="#new-lead">new-lead</a></li><li><a href="#nudge-24h">nudge-24h</a></li><li><a href="#owner-cc-72h">owner-cc-72h</a></li><li><a href="#weekly-digest">weekly-digest</a></li><li><a href="#magic-link">magic-link</a></li><li><a href="#front-desk-invite">front-desk-invite</a></li><li><a href="#retention-purge">retention-purge</a></li><li><a href="#export-ready">export-ready</a></li></ul></nav>
+  
+<section id="new-lead">
+  <header>
+    <h2>new-lead</h2>
+    <p class="desc">A new lead was captured and is waiting in the inbox. <span class="pill">PII guard</span></p>
+    <dl>
+      <dt>Subject</dt><dd>New lead: A. Sample <span class="len">19 chars</span></dd>
+      <dt>Preheader</dt><dd>A. Sample is waiting in the Sample Medspa inbox. <span class="len">48 chars</span></dd>
+    </dl>
+  </header>
+  <div class="panes">
+    <div class="pane">
+      <div class="pane-title">HTML part <a href="new-lead.html" target="_blank">open</a></div>
+      <iframe src="new-lead.html" title="new-lead HTML preview" loading="lazy"></iframe>
+    </div>
+    <div class="pane">
+      <div class="pane-title">Plain-text part <a href="new-lead.txt" target="_blank">open</a></div>
+      <pre>AfterVue
+
+NEW LEAD
+A. Sample would like to hear from Sample Medspa
+===============================================
+
+A new lead has been added to your AfterVue inbox. Contact details and notes are in the inbox, not in this email.
+
+First name:  A. Sample
+Source:      Website preview widget
+Received:    Thu, Oct 8, 2:05 PM
+Assigned to: B. Sample
+
+Open the inbox:
+https://app.getaftervue.com/inbox/leads/ld_sample_0001
+
+If the button does not work, copy this link into your browser:
+https://app.getaftervue.com/inbox/leads/ld_sample_0001
+
+The inbox records the time of your first reply, which feeds the weekly summary.
+
+--
+You received this because new-lead alerts are on for Sample Medspa in AfterVue.
+Manage notifications: https://app.getaftervue.com/settings/notifications
+Questions: support@getaftervue.com
+This message was sent by AfterVue. It contains no patient details.
+</pre>
+    </div>
+  </div>
+</section>
+
+<section id="nudge-24h">
+  <header>
+    <h2>nudge-24h</h2>
+    <p class="desc">The assigned team member has not contacted a lead after 24 hours. <span class="pill">PII guard</span></p>
+    <dl>
+      <dt>Subject</dt><dd>24-hour reminder: A. Sample <span class="len">27 chars</span></dd>
+      <dt>Preheader</dt><dd>A. Sample has been waiting 24 hours for a first reply. <span class="len">54 chars</span></dd>
+    </dl>
+  </header>
+  <div class="panes">
+    <div class="pane">
+      <div class="pane-title">HTML part <a href="nudge-24h.html" target="_blank">open</a></div>
+      <iframe src="nudge-24h.html" title="nudge-24h HTML preview" loading="lazy"></iframe>
+    </div>
+    <div class="pane">
+      <div class="pane-title">Plain-text part <a href="nudge-24h.txt" target="_blank">open</a></div>
+      <pre>AfterVue
+
+REMINDER
+A. Sample is still waiting
+==========================
+
+B. Sample, this lead is assigned to you and is still marked new after 24 hours.
+
+First name: A. Sample
+Received:   Wed, Oct 7, 2:05 PM
+Waiting:    24 hours
+
+Open the lead:
+https://app.getaftervue.com/inbox/leads/ld_sample_0001
+
+If the button does not work, copy this link into your browser:
+https://app.getaftervue.com/inbox/leads/ld_sample_0001
+
+Marking the lead as contacted in the inbox stops these reminders. If the lead has already been reached another way, update the status so the record is accurate.
+
+--
+You received this because this lead at Sample Medspa is assigned to you in AfterVue.
+Manage notifications: https://app.getaftervue.com/settings/notifications
+Questions: support@getaftervue.com
+This message was sent by AfterVue. It contains no patient details.
+</pre>
+    </div>
+  </div>
+</section>
+
+<section id="owner-cc-72h">
+  <header>
+    <h2>owner-cc-72h</h2>
+    <p class="desc">A lead has gone 72 hours without contact; the owner is copied. <span class="pill">PII guard</span></p>
+    <dl>
+      <dt>Subject</dt><dd>72 hours untouched: A. Sample <span class="len">29 chars</span></dd>
+      <dt>Preheader</dt><dd>A lead at Sample Medspa has had no first reply for 3 days. <span class="len">58 chars</span></dd>
+    </dl>
+  </header>
+  <div class="panes">
+    <div class="pane">
+      <div class="pane-title">HTML part <a href="owner-cc-72h.html" target="_blank">open</a></div>
+      <iframe src="owner-cc-72h.html" title="owner-cc-72h HTML preview" loading="lazy"></iframe>
+    </div>
+    <div class="pane">
+      <div class="pane-title">Plain-text part <a href="owner-cc-72h.txt" target="_blank">open</a></div>
+      <pre>AfterVue
+
+OWNER COPY
+A. Sample has not been contacted
+================================
+
+This lead was received 3 days ago and is still marked new. The assignee was reminded at 24 hours.
+
+First name:  A. Sample
+Assigned to: B. Sample
+Received:    Mon, Oct 5, 2:05 PM
+Waiting:     3 days
+
+Open the lead:
+https://app.getaftervue.com/inbox/leads/ld_sample_0001
+
+If the button does not work, copy this link into your browser:
+https://app.getaftervue.com/inbox/leads/ld_sample_0001
+
+You can reassign the lead or contact the person yourself from the inbox. No further reminders are sent for this lead.
+
+--
+You received this because you are the owner of Sample Medspa in AfterVue and a lead has gone 72 hours without contact.
+Manage notifications: https://app.getaftervue.com/settings/notifications
+Questions: support@getaftervue.com
+This message was sent by AfterVue. It contains no patient details.
+</pre>
+    </div>
+  </div>
+</section>
+
+<section id="weekly-digest">
+  <header>
+    <h2>weekly-digest</h2>
+    <p class="desc">Weekly summary of lead counts and response times for the owner. <span class="pill">PII guard</span></p>
+    <dl>
+      <dt>Subject</dt><dd>Weekly lead summary: Oct 2 to Oct 8 <span class="len">35 chars</span></dd>
+      <dt>Preheader</dt><dd>14 new leads, 11 replied to, for Sample Medspa. <span class="len">47 chars</span></dd>
+    </dl>
+  </header>
+  <div class="panes">
+    <div class="pane">
+      <div class="pane-title">HTML part <a href="weekly-digest.html" target="_blank">open</a></div>
+      <iframe src="weekly-digest.html" title="weekly-digest HTML preview" loading="lazy"></iframe>
+    </div>
+    <div class="pane">
+      <div class="pane-title">Plain-text part <a href="weekly-digest.txt" target="_blank">open</a></div>
+      <pre>AfterVue
+
+WEEKLY SUMMARY
+Leads at Sample Medspa, Oct 2 to Oct 8
+======================================
+
+Here is how Sample Medspa handled leads for the week of Oct 2 to Oct 8.
+
+New leads:                  14
+Received a first reply:     11
+Replied within one hour:    8
+Median time to first reply: 47 min
+
+Status     Leads
+---------  -----
+New        3
+Contacted  6
+Booked     4
+Closed     1
+
+3 leads still waiting for a first reply:
+
+First name  Waiting
+----------  --------
+A. Sample   3 days
+C. Sample   31 hours
+D. Sample   9 hours
+
+Open the inbox:
+https://app.getaftervue.com/inbox
+
+If the button does not work, copy this link into your browser:
+https://app.getaftervue.com/inbox
+
+--
+You received this because the weekly summary is on for Sample Medspa in AfterVue.
+Manage notifications: https://app.getaftervue.com/settings/notifications
+Questions: support@getaftervue.com
+This message was sent by AfterVue. It contains no patient details.
+</pre>
+    </div>
+  </div>
+</section>
+
+<section id="magic-link">
+  <header>
+    <h2>magic-link</h2>
+    <p class="desc">Passwordless sign-in link.</p>
+    <dl>
+      <dt>Subject</dt><dd>Your AfterVue sign-in link <span class="len">26 chars</span></dd>
+      <dt>Preheader</dt><dd>This link signs you in once and expires in 15 minutes. <span class="len">54 chars</span></dd>
+    </dl>
+  </header>
+  <div class="panes">
+    <div class="pane">
+      <div class="pane-title">HTML part <a href="magic-link.html" target="_blank">open</a></div>
+      <iframe src="magic-link.html" title="magic-link HTML preview" loading="lazy"></iframe>
+    </div>
+    <div class="pane">
+      <div class="pane-title">Plain-text part <a href="magic-link.txt" target="_blank">open</a></div>
+      <pre>AfterVue
+
+SIGN IN
+Your sign-in link
+=================
+
+B. Sample, use the button below to sign in to AfterVue. The link works once and expires in 15 minutes.
+
+Sign in to AfterVue:
+https://app.getaftervue.com/auth/verify?token=sample-token-not-real
+
+If the button does not work, copy this link into your browser:
+https://app.getaftervue.com/auth/verify?token=sample-token-not-real
+
+This request came from Safari on iPad.
+
+If you did not request this link, no action is needed. Nobody can sign in without access to this mailbox.
+
+--
+You received this because someone requested a sign-in link for this address.
+Manage notifications: https://app.getaftervue.com/settings/notifications
+Questions: support@getaftervue.com
+This message was sent by AfterVue. It contains no patient details.
+</pre>
+    </div>
+  </div>
+</section>
+
+<section id="front-desk-invite">
+  <header>
+    <h2>front-desk-invite</h2>
+    <p class="desc">An owner invited a front-desk team member to the practice inbox.</p>
+    <dl>
+      <dt>Subject</dt><dd>Invitation: Sample Medspa on AfterVue <span class="len">37 chars</span></dd>
+      <dt>Preheader</dt><dd>A. Owner Sample invited you to work leads for Sample Medspa. <span class="len">60 chars</span></dd>
+    </dl>
+  </header>
+  <div class="panes">
+    <div class="pane">
+      <div class="pane-title">HTML part <a href="front-desk-invite.html" target="_blank">open</a></div>
+      <iframe src="front-desk-invite.html" title="front-desk-invite HTML preview" loading="lazy"></iframe>
+    </div>
+    <div class="pane">
+      <div class="pane-title">Plain-text part <a href="front-desk-invite.txt" target="_blank">open</a></div>
+      <pre>AfterVue
+
+INVITATION
+Join Sample Medspa on AfterVue
+==============================
+
+B. Sample, A. Owner Sample has invited you to join Sample Medspa as a front-desk member. You will be able to see new leads, reply to them and mark them as contacted or booked.
+
+Accept the invitation:
+https://app.getaftervue.com/invite/accept?token=sample-invite-not-real
+
+If the button does not work, copy this link into your browser:
+https://app.getaftervue.com/invite/accept?token=sample-invite-not-real
+
+This invitation expires in 7 days. After that, ask A. Owner Sample to send a new one.
+
+Lead details are protected health information. Only open the inbox on a device the practice controls.
+
+--
+You received this because A. Owner Sample invited you to the Sample Medspa team on AfterVue.
+Manage notifications: https://app.getaftervue.com/settings/notifications
+Questions: support@getaftervue.com
+This message was sent by AfterVue. It contains no patient details.
+</pre>
+    </div>
+  </div>
+</section>
+
+<section id="retention-purge">
+  <header>
+    <h2>retention-purge</h2>
+    <p class="desc">Leads older than the retention window were deleted. <span class="pill">PII guard</span></p>
+    <dl>
+      <dt>Subject</dt><dd>Retention: 23 leads removed <span class="len">27 chars</span></dd>
+      <dt>Preheader</dt><dd>Leads received before Jul 10, 2026 were deleted under your 90-day policy. <span class="len">73 chars</span></dd>
+    </dl>
+  </header>
+  <div class="panes">
+    <div class="pane">
+      <div class="pane-title">HTML part <a href="retention-purge.html" target="_blank">open</a></div>
+      <iframe src="retention-purge.html" title="retention-purge HTML preview" loading="lazy"></iframe>
+    </div>
+    <div class="pane">
+      <div class="pane-title">Plain-text part <a href="retention-purge.txt" target="_blank">open</a></div>
+      <pre>AfterVue
+
+RETENTION
+23 leads removed under your retention policy
+============================================
+
+AfterVue keeps lead records for Sample Medspa for 90 days. Records older than that were permanently deleted, including names, contact details, notes and any attached photos.
+
+Records removed:  23
+Received before:  Jul 10, 2026
+Run at:           Oct 8, 2026
+Retention window: 90 days
+
+Deleted records cannot be restored. If you need a longer window, change it in settings before the next run. Exports are available to practices with a signed BAA.
+
+Review retention settings:
+https://app.getaftervue.com/settings/retention
+
+If the button does not work, copy this link into your browser:
+https://app.getaftervue.com/settings/retention
+
+--
+You received this because you are the owner of Sample Medspa and its retention window is 90 days.
+Manage notifications: https://app.getaftervue.com/settings/notifications
+Questions: support@getaftervue.com
+This message was sent by AfterVue. It contains no patient details.
+</pre>
+    </div>
+  </div>
+</section>
+
+<section id="export-ready">
+  <header>
+    <h2>export-ready</h2>
+    <p class="desc">A CSV export of leads is ready to download. <span class="pill">PII guard</span></p>
+    <dl>
+      <dt>Subject</dt><dd>Your lead export is ready <span class="len">25 chars</span></dd>
+      <dt>Preheader</dt><dd>142 rows for Sample Medspa. The link expires Fri, Oct 9, 2:00 PM. <span class="len">65 chars</span></dd>
+    </dl>
+  </header>
+  <div class="panes">
+    <div class="pane">
+      <div class="pane-title">HTML part <a href="export-ready.html" target="_blank">open</a></div>
+      <iframe src="export-ready.html" title="export-ready HTML preview" loading="lazy"></iframe>
+    </div>
+    <div class="pane">
+      <div class="pane-title">Plain-text part <a href="export-ready.txt" target="_blank">open</a></div>
+      <pre>AfterVue
+
+EXPORT
+Your CSV export is ready
+========================
+
+The export you requested has been prepared. It is not attached to this email. Use the link below to download it.
+
+Practice:     Sample Medspa
+Date range:   Jul 1, 2026 to Oct 1, 2026
+Rows:         142
+Link expires: Fri, Oct 9, 2:00 PM
+
+Download the export:
+https://storage.googleapis.com/sample-bucket/exports/sample.csv?X-Goog-Signature=not-a-real-signature
+
+If the button does not work, copy this link into your browser:
+https://storage.googleapis.com/sample-bucket/exports/sample.csv?X-Goog-Signature=not-a-real-signature
+
+The file contains protected health information and is available because a Business Associate Agreement is on file for this practice. Store it only where your HIPAA policy allows, and delete it when it is no longer needed. The link stops working at the time shown above.
+
+--
+You received this because you requested a CSV export from AfterVue.
+Manage notifications: https://app.getaftervue.com/settings/notifications
+Questions: support@getaftervue.com
+This message was sent by AfterVue. It contains no patient details.
+</pre>
+    </div>
+  </div>
+</section>
+</div>
+</body>
+</html>
