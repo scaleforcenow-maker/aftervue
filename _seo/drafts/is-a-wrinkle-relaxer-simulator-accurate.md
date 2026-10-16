@@ -19,7 +19,7 @@ sources:
 status: reviewed
 ---
 
-Searches like "is botox simulator accurate", "how will I look after a wrinkle relaxer" and "how would I look with lip filler ai" ask the same thing. The short answer: a good wrinkle-relaxer simulator is accurate about direction and silent about everything that decides your actual result. It can show how your own face might look with softer forehead lines or fuller lips. It cannot know the dose, your anatomy, how you heal or how the result changes over the following weeks. Treat it as an illustration to discuss with a provider, not a forecast.
+Searches like "is a wrinkle relaxer simulator accurate", "how will I look after a wrinkle relaxer" and "how would I look with lip filler ai" ask the same thing. The short answer: a good wrinkle-relaxer simulator is accurate about direction and silent about everything that decides your actual result. It can show how your own face might look with softer forehead lines or fuller lips. It cannot know the dose, your anatomy, how you heal or how the result changes over the following weeks. Treat it as an illustration to discuss with a provider, not a forecast.
 
 This article is general information, not medical advice. Treatment decisions belong with a licensed provider who has examined you.
 

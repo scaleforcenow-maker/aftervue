@@ -65,7 +65,7 @@ Device, storage, and messaging rules for real photos live in our [HIPAA photo ch
 
 State biometric laws sit on top of HIPAA and care about face geometry, not just photos. Each is a reason to ask your vendor, in writing, what it extracts and keeps.
 
-**Illinois.** The [Biometric Information Privacy Act](https://www.ilga.gov/documents/legislation/ilcs/documents/074000140K15.htm) covers scans of face geometry and excludes photographs. Before collecting, a private entity must inform the person in writing, state the purpose and length of term, and obtain a written release. It also needs a public retention policy that destroys the data when the purpose is met or within three years of the person's last interaction, whichever comes first.
+**Illinois.** The [Biometric Information Privacy Act](https://www.ilga.gov/documents/legislation/ilcs/documents/074000140K15.htm) covers [scans of face geometry](https://www.ilga.gov/documents/legislation/ilcs/documents/074000140k10.htm) and excludes photographs. Before collecting, a private entity must inform the person in writing, state the purpose and length of term, and obtain a written release. It also needs a public retention policy that destroys the data when the purpose is met or within three years of the person's last interaction, whichever comes first.
 
 **Texas.** The [Capture or Use of Biometric Identifier Act](https://statutes.capitol.texas.gov/Docs/BC/htm/BC.503.htm) covers records of face geometry. A business must inform the person and receive consent before capturing one for a commercial purpose, may not sell or disclose it except in narrow cases, and must destroy it within a reasonable time and no later than one year after the purpose for collecting it ends.
 
