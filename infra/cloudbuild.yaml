@@ -1,0 +1,95 @@
+# Build and deploy both AfterVue Cloud Run images.
+#
+# Run from the repo root (the build context is the whole repo so each image's
+# Dockerfile can be given its own directory):
+#
+#   gcloud builds submit . --config infra/cloudbuild.yaml \
+#     --project "$PROJECT_ID" --region "$REGION" \
+#     --service-account "projects/$PROJECT_ID/serviceAccounts/aftervue-cloudbuild-sa@$PROJECT_ID.iam.gserviceaccount.com" \
+#     --substitutions _REGION=us-east4,_AR_REPO=aftervue,_TAG=$(git rev-parse --short HEAD)
+#
+# infra/deploy.sh wraps exactly this. Substitutions carry every identifier; nothing
+# project-specific is hard-coded here. $PROJECT_ID is a built-in substitution.
+
+substitutions:
+  _REGION: us-east4
+  _AR_REPO: aftervue
+  _TAG: manual
+  _PREVIEW_SERVICE: preview-api
+  _LEADS_SERVICE: leads-api
+  _PREVIEW_CONTEXT: infra/preview-api
+  _LEADS_CONTEXT: aftervue-leads
+  _BUILD_PREVIEW: "true"
+  _BUILD_LEADS: "true"
+  _DEPLOY: "true"
+
+options:
+  # Required when building with a user-specified service account.
+  logging: CLOUD_LOGGING_ONLY
+  machineType: E2_HIGHCPU_8
+  dynamicSubstitutions: true
+  env:
+    - DOCKER_BUILDKIT=1
+
+timeout: 1200s
+
+steps:
+  # ---- preview-api ---------------------------------------------------------
+  - id: build-preview
+    name: gcr.io/cloud-builders/docker
+    entrypoint: bash
+    args:
+      - -ceu
+      - |
+        if [ "${_BUILD_PREVIEW}" != "true" ]; then echo "skip preview build"; exit 0; fi
+        IMAGE="${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_AR_REPO}/${_PREVIEW_SERVICE}"
+        docker build \
+          --tag "$$IMAGE:${_TAG}" --tag "$$IMAGE:latest" \
+          --file "${_PREVIEW_CONTEXT}/Dockerfile" "${_PREVIEW_CONTEXT}"
+        docker push "$$IMAGE:${_TAG}"
+        docker push "$$IMAGE:latest"
+
+  # ---- leads-api -------------------------------------------------------------
+  - id: build-leads
+    name: gcr.io/cloud-builders/docker
+    entrypoint: bash
+    args:
+      - -ceu
+      - |
+        if [ "${_BUILD_LEADS}" != "true" ]; then echo "skip leads build"; exit 0; fi
+        if [ ! -f "${_LEADS_CONTEXT}/Dockerfile" ]; then
+          echo "ERROR: ${_LEADS_CONTEXT}/Dockerfile not found in the build context (aftervue-leads not pushed yet?)"; exit 1
+        fi
+        IMAGE="${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_AR_REPO}/${_LEADS_SERVICE}"
+        docker build \
+          --tag "$$IMAGE:${_TAG}" --tag "$$IMAGE:latest" \
+          --file "${_LEADS_CONTEXT}/Dockerfile" "${_LEADS_CONTEXT}"
+        docker push "$$IMAGE:${_TAG}"
+        docker push "$$IMAGE:latest"
+
+  # ---- deploy (image only; Terraform owns every other service setting) --------
+  - id: deploy-preview
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    entrypoint: bash
+    waitFor: [build-preview]
+    args:
+      - -ceu
+      - |
+        if [ "${_DEPLOY}" != "true" ] || [ "${_BUILD_PREVIEW}" != "true" ]; then echo "skip preview deploy"; exit 0; fi
+        gcloud run deploy "${_PREVIEW_SERVICE}" \
+          --project "${PROJECT_ID}" --region "${_REGION}" \
+          --image "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_AR_REPO}/${_PREVIEW_SERVICE}:${_TAG}" \
+          --quiet
+
+  - id: deploy-leads
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    entrypoint: bash
+    waitFor: [build-leads]
+    args:
+      - -ceu
+      - |
+        if [ "${_DEPLOY}" != "true" ] || [ "${_BUILD_LEADS}" != "true" ]; then echo "skip leads deploy"; exit 0; fi
+        gcloud run deploy "${_LEADS_SERVICE}" \
+          --project "${PROJECT_ID}" --region "${_REGION}" \
+          --image "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_AR_REPO}/${_LEADS_SERVICE}:${_TAG}" \
+          --quiet
