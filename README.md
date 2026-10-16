@@ -27,3 +27,6 @@ section 8 for how cloud sessions get access to it.
 - `packages/vertex-resilience/`: queue, rate limiting, retry, model fallback and
   deadlines for the Vertex AI image calls behind `/api/generate`. Runbook in
   `docs/preview-api-resilience.md`.
+- `infra/`: Terraform, Cloud Build and the `preview-api` service skeleton for
+  running `/api/generate` and lead management on Cloud Run under the Google Cloud
+  BAA. Cutover plan in `docs/cloud-run-migration.md`.
