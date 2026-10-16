@@ -191,3 +191,8 @@ logs/
 
 # --- from seo-build-kit ---
 site_out/
+
+# --- from linkedin-article-pack ---
+tools/social/fonts/
+tools/social/banned_terms.local.txt
+*.pyc
