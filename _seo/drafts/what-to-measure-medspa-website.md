@@ -49,11 +49,11 @@ No step needs a developer.
 
 ## Events in Plausible
 
-Plausible's docs give two routes. Switch the snippet to the tagged-events script and add a class such as `plausible-event-name=Booking+Start` to the button, or call `plausible('Booking Start')` from your own code. The event does nothing until you create a goal in the dashboard with the exact same name. Custom properties are supported; use one for a generic treatment category.
+[Plausible's docs](https://docs.plausible.io/custom-event-goals) give two routes. Switch the snippet to the tagged-events script and add a class such as `plausible-event-name=Booking+Start` to the button, or call `plausible('Booking Start')` from your own code. The event does nothing until you create a goal in the dashboard with the exact same name. Custom properties are supported; use one for a generic treatment category.
 
 ## Events in GA4
 
-Google publishes recommended event names, and lead generation has its own set. The event `generate_lead` is meant for a submitted form, so fire it on a completed request and mark it as a key event. The later stages, `qualify_lead`, `working_lead`, and `close_convert_lead`, are built for data sent from a CRM or an offline process. Leave consults held and treatments scheduled in your booking software. For the top of the funnel, a custom event named `booking_start` is fine.
+Google publishes [recommended event names](https://support.google.com/analytics/answer/9267735), and lead generation has its own set. The event `generate_lead` is meant for a submitted form, so fire it on a completed request and mark it as a key event. The later stages, `qualify_lead`, `working_lead`, and `close_convert_lead`, are built for data sent from a CRM or an offline process. Leave consults held and treatments scheduled in your booking software. For the top of the funnel, a custom event named `booking_start` is fine.
 
 ## UTM rules for Instagram and Google Business Profile
 
@@ -65,7 +65,7 @@ Call tracking services swap in a different number per source, which changes the 
 
 ## What never goes into an analytics event
 
-An event carries a page, an event name, and at most a generic property. Never a name, email, phone number, photo, date of birth, or free-text note. The HHS Office for Civil Rights bulletin on online tracking technologies gives the agency's view of when website data is protected health information. In June 2024 a federal court in Texas vacated the part covering unauthenticated public pages, and the agency later withdrew its appeal; the rest stands as guidance. Court rulings do not change what a patient expects, and state privacy laws still apply. This is not legal advice.
+An event carries a page, an event name, and at most a generic property. Never a name, email, phone number, photo, date of birth, or free-text note. The [HHS Office for Civil Rights bulletin on online tracking technologies](https://www.hhs.gov/hipaa/for-professionals/privacy/guidance/hipaa-online-tracking/index.html) gives the agency's view of when website data is protected health information. In June 2024 a federal court in Texas [vacated the part covering unauthenticated public pages](https://nixonpeabody.com/insights/alerts/2024/07/03/portions-of-ocrs-bulletin-on-online-tracking-technologies-deemed-unlawful), and the agency later withdrew its appeal; the rest stands as guidance. Court rulings do not change what a patient expects, and state privacy laws still apply. This is not legal advice.
 
 ## Where a preview tool fits in medspa lead generation
 
