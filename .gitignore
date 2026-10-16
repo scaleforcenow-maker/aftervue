@@ -202,3 +202,5 @@ tools/stripe/catalog.*.json
 !tools/stripe/catalog.sample.json
 
 # --- from vertex-resilience ---
+
+# --- from appstore-localized-metadata ---
