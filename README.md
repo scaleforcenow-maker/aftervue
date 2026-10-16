@@ -24,3 +24,6 @@ section 8 for how cloud sessions get access to it.
   service (new lead, reminders, weekly digest, sign-in, invitation, retention,
   export) with a Postmark adapter, tests and browser previews under
   `packages/lead-emails/previews/`.
+- `packages/vertex-resilience/`: queue, rate limiting, retry, model fallback and
+  deadlines for the Vertex AI image calls behind `/api/generate`. Runbook in
+  `docs/preview-api-resilience.md`.

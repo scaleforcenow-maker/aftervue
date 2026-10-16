@@ -200,3 +200,5 @@ tools/social/banned_terms.local.txt
 # --- from stripe-catalog ---
 tools/stripe/catalog.*.json
 !tools/stripe/catalog.sample.json
+
+# --- from vertex-resilience ---

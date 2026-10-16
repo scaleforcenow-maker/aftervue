@@ -1,0 +1,23 @@
+{
+  "name": "@aftervue/vertex-resilience",
+  "version": "0.1.0",
+  "description": "Queue, per-model rate limiting, jittered retry, model fallback and deadlines for Vertex AI image generation. Zero runtime dependencies.",
+  "type": "module",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./vertex-adapter": "./src/vertex-adapter.js"
+  },
+  "files": [
+    "src",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  },
+  "license": "UNLICENSED",
+  "private": true
+}
